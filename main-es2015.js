@@ -97,6 +97,10 @@ let AppComponent = class AppComponent {
         this.liffService = liffService;
         this.title = 'LIFF Mock';
         this.messages = '';
+        this.initLineLiff();
+    }
+    ngOnInit() {
+        this.initLineLiff();
     }
     initLineLiff() {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
