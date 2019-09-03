@@ -103,7 +103,10 @@ var AppComponent = /** @class */ (function () {
         this.initLineLiff();
     }
     AppComponent.prototype.ngOnInit = function () {
-        this.initLineLiff();
+        liff.bluetooth.getAvailability().then(function (available) {
+            alert('available' + available);
+        });
+        // this.initLineLiff();
     };
     AppComponent.prototype.initLineLiff = function () {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
@@ -306,7 +309,7 @@ var LiffService = /** @class */ (function () {
             liff.init(function () {
                 _this.initializeLiff();
             }, function (err) {
-                console.log(err);
+                console.log('initLineLiff', err);
                 // this.uiStatusError(this.makeErrorMsg(err), false);
             });
         });
@@ -319,7 +322,7 @@ var LiffService = /** @class */ (function () {
             _this.liffCheckAvailablityAndDo(function () { return _this.liffRequestDevice(); });
         })
             .catch(function (err) {
-            console.log(err);
+            console.log('initializeLiff', err);
             // this.uiStatusError(this.makeErrorMsg(err), false);
         });
     };

@@ -100,7 +100,10 @@ let AppComponent = class AppComponent {
         this.initLineLiff();
     }
     ngOnInit() {
-        this.initLineLiff();
+        liff.bluetooth.getAvailability().then(available => {
+            alert('available' + available);
+        });
+        // this.initLineLiff();
     }
     initLineLiff() {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
@@ -270,8 +273,8 @@ let LiffService = class LiffService {
         return new Promise((resolveLiff, rejectLiff) => {
             liff.init(() => {
                 this.initializeLiff();
-            }, err => {
-                console.log(err);
+            }, (err) => {
+                console.log('initLineLiff', err);
                 // this.uiStatusError(this.makeErrorMsg(err), false);
             });
         });
@@ -282,8 +285,8 @@ let LiffService = class LiffService {
             .then(() => {
             this.liffCheckAvailablityAndDo(() => this.liffRequestDevice());
         })
-            .catch(err => {
-            console.log(err);
+            .catch((err) => {
+            console.log('initializeLiff', err);
             // this.uiStatusError(this.makeErrorMsg(err), false);
         });
     }
