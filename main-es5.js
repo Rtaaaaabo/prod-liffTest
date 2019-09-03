@@ -94,6 +94,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
 var AppComponent = /** @class */ (function () {
     function AppComponent(liffService) {
         this.liffService = liffService;
@@ -280,30 +281,154 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LiffService", function() { return LiffService; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! q */ "./node_modules/q/q.js");
-/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(q__WEBPACK_IMPORTED_MODULE_2__);
 
 
-
+var USER_SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
+var PSDI_SERVICE_UUID = 'e625601e-9e55-4597-a598-76018a0d293d';
+var PSDI_CHARACTERISTIC_UUID = '26e2b12b-85f0-4f3f-9fdd-91d114270e6e';
+var deviceUUIDSet = new Set();
+var connectedUUIDSet = new Set();
+var connectingUUIDSet = new Set();
+var notificationUUIDSet = new Set();
 var LiffService = /** @class */ (function () {
     function LiffService() {
     }
+    // makeErrorMsg(errObj) {
+    //   return `Error\n${errObj.code}\n${errObj.message}`;
+    // }
     LiffService.prototype.initLineLiff = function () {
+        var _this = this;
         return new Promise(function (resolveLiff, rejectLiff) {
-            liff.init(function (data) {
-                Object(q__WEBPACK_IMPORTED_MODULE_2__["resolve"])(liff.getProfile());
+            liff.init(function () {
+                _this.initializeLiff();
             }, function (err) {
-                Object(q__WEBPACK_IMPORTED_MODULE_2__["reject"])(err);
+                console.log(err);
+                // this.uiStatusError(this.makeErrorMsg(err), false);
             });
         });
     };
-    LiffService.prototype.getLineProfile = function () {
-        return new Promise(function (resolveProfile, rejectProfile) {
-            liff.getProfile(function (data) {
-                Object(q__WEBPACK_IMPORTED_MODULE_2__["resolve"])(data);
-            }, function (err) {
-                Object(q__WEBPACK_IMPORTED_MODULE_2__["reject"])(err);
+    LiffService.prototype.initializeLiff = function () {
+        var _this = this;
+        liff
+            .initPlugins(['bluetooth'])
+            .then(function () {
+            _this.liffCheckAvailablityAndDo(function () { return _this.liffRequestDevice(); });
+        })
+            .catch(function (err) {
+            console.log(err);
+            // this.uiStatusError(this.makeErrorMsg(err), false);
+        });
+    };
+    LiffService.prototype.liffCheckAvailablityAndDo = function (callbackIfAvailable) {
+        var _this = this;
+        liff.bluetooth
+            .getAvailability()
+            .then(function (isAvailable) {
+            if (isAvailable) {
+                _this.uiToggleDeviceConnected(false);
+                callbackIfAvailable();
+            }
+            else {
+                // this.uiStatusError('Bluetooth not available', true);
+                setTimeout(function () { return _this.liffCheckAvailablityAndDo(callbackIfAvailable); }, 10000);
+            }
+        })
+            .catch(function (error) {
+            // this.uiStatusError(makeErrorMsg(error), false);
+            console.log(error);
+        });
+    };
+    LiffService.prototype.liffRequestDevice = function () {
+        var _this = this;
+        liff.bluetooth
+            .requestDevice()
+            .then(function (device) {
+            _this.liffConnectToDevice(device);
+        })
+            .catch(function (error) {
+            // this.uiStatusError(makeErrorMsg(error), false);
+            console.log(error);
+        });
+    };
+    LiffService.prototype.liffConnectToDevice = function (device) {
+        var _this = this;
+        device.gatt.connect().then(function () {
+            // document.getElementById('device-name').innerText = device.name;
+            // document.getElementById('device-id').innerText = device.id;
+            // // Show status connected
+            _this.uiToggleDeviceConnected(true);
+            // device.gatt
+            //   .getPrimaryService(USER_SERVICE_UUID)
+            //   .then(service => {
+            //     this.liffGetUserService(service);
+            //   })
+            //   .catch(error => {
+            //     console.log(error);
+            //     // this.uiStatusError(makeErrorMsg(error), false);
+            //   });
+            device.gatt
+                .getPrimaryService(PSDI_SERVICE_UUID)
+                .then(function (service) {
+                _this.liffGetPSDIService(service);
+            })
+                .catch(function (error) {
+                console.log(error);
+                // uiStatusError(makeErrorMsg(error), false);
             });
+            var disconnectCallback = function () {
+                // Show status disconnected
+                _this.uiToggleDeviceConnected(false);
+                // Remove disconnect callback
+                device.removeEventListener('gattserverdisconnected', disconnectCallback);
+                // Reset LED state
+                // ledState = false;
+                // Reset UI elements
+                // uiToggleLedButton(false);
+                // uiToggleStateButton(false);
+                // Try to reconnect
+                _this.initLineLiff();
+            };
+            device.addEventListener('gattserverdisconnected', disconnectCallback);
+        }).catch(function (error) {
+            console.log(error);
+            // uiStatusError(makeErrorMsg(error), false);
+        });
+    };
+    LiffService.prototype.uiToggleDeviceConnected = function (connected) {
+        // const elStatus = document.getElementById("status");
+        // const elControls = document.getElementById("controls");
+        // elStatus.classList.remove("error");
+        if (connected) {
+            console.log(connected);
+            // Hide loading animation
+            // this.uiToggleLoadingAnimation(false);
+            // Show status connected
+            // elStatus.classList.remove("inactive");
+            // elStatus.classList.add("success");
+            // elStatus.innerText = "Device connected";
+            // // Show controls
+            // elControls.classList.remove("hidden");
+        }
+        else {
+            console.log('Not Connected');
+            // Show loading animation
+            // this.uiToggleLoadingAnimation(true);
+            // Show status disconnected
+            // elStatus.classList.remove("success");
+            // elStatus.classList.add("inactive");
+            // elStatus.innerText = "Device disconnected";
+            // // Hide controls
+            // elControls.classList.add("hidden");
+        }
+    };
+    LiffService.prototype.liffGetPSDIService = function (service) {
+        service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {
+            return characteristic.readValue();
+        }).then(function (value) {
+            var psdi = new Uint8Array(value.buffer).reduce(function (output, byte) { return output + ('0' + byte.toString(16)).slice(-2); }, '');
+        }).catch(function (error) {
+            console.log(error);
+            // this.uiStatusError(makeErrorMsg(error), false);
         });
     };
     LiffService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
