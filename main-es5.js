@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <div class=\"text-center\">\n      <p>ng x line liff</p>\n      <br>\n      <div class=\"d-flex\">\n        {{userProfile | json}}\n      </div>\n      <div>\n        <input matInput class=\"form-control\" type=\"text\" [(ngModel)]=\"messages\">\n        <br>\n        <button class=\"btn btn-primary\" (click)=\"sendMessages()\">send</button>\n      </div>\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
+module.exports = "<mat-toolbar>Line Things APP</mat-toolbar>\n<div class=\"container\">\n    <div class=\"text-center\">\n      <p>\n        <span *ngIf=\"statusBle\">接続しました</span>\n        <span *ngIf=\"!statusBle\">接続しておりません</span>\n      </p>\n      <br>\n      <div *ngIf=\"statusBle\" class=\"d-flex\">\n        {{userProfile | json}}\n      </div>\n      <div *ngIf=\"!statusBle\" class=\"d-flex\">\n          調子が悪い時は再起動してみてね！\n        </div>\n      <!-- <div>\n        <input matInput class=\"form-control\" type=\"text\" [(ngModel)]=\"messages\">\n        <br>\n        <button class=\"btn btn-primary\" (click)=\"sendMessages()\">send</button>\n      </div> -->\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
 
 /***/ }),
 
@@ -90,78 +90,109 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var _services_liff_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./services/liff.service */ "./src/app/services/liff.service.ts");
-
 
 
 var SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
+var LED_CHARACTERISTIC_UUID = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
+var BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
+// PSDI Service UUID: Fixed value for Developer Trial
+var PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
+var PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
 var AppComponent = /** @class */ (function () {
-    function AppComponent(liffService) {
-        this.liffService = liffService;
+    function AppComponent() {
         this.title = 'LIFF Mock';
         this.messages = '';
-        this.initLineLiff();
+        this.statusBle = false;
     }
     AppComponent.prototype.ngOnInit = function () {
-        liff.bluetooth.getAvailability().then(function (available) {
-            alert('available' + available);
-        });
-        // this.initLineLiff();
+        var _this = this;
+        liff.init(function () { return _this.initLineLiff(); }, function (error) { return alert('31' + JSON.stringify(error)); });
     };
     AppComponent.prototype.initLineLiff = function () {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            var data, _a, err_1;
-            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, this.liffService.initLineLiff()];
-                    case 1:
-                        data = _b.sent();
-                        _a = this;
-                        return [4 /*yield*/, liff.getProfile()];
-                    case 2:
-                        _a.userProfile = _b.sent();
-                        alert("\u3053\u3093\u306B\u3061\u306F\uFF01 " + this.userProfile.displayName);
-                        return [3 /*break*/, 4];
-                    case 3:
-                        err_1 = _b.sent();
-                        alert(err_1);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    AppComponent.prototype.sendMessages = function () {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            var successMsgs, e_1;
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, liff.sendMessages([
-                                {
-                                    type: 'text',
-                                    text: this.messages
-                                }
-                            ])];
-                    case 1:
-                        successMsgs = _a.sent();
-                        liff.closeWindow();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        e_1 = _a.sent();
-                        alert(e_1);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
+                liff.initPlugins(['bluetooth']).then(function () {
+                    liff.bluetooth.getAvailability().then(function (isAvailable) {
+                        // alert('37 ' + JSON.stringify(liff));
+                        liff.bluetooth.requestDevice().then(function (device) {
+                            alert('DEVICE: ' + JSON.stringify(device));
+                        }).catch(function (error1) { return alert('41 ERROR: ' + JSON.stringify(error1)); });
+                    }).catch(function (error2) { return alert('42 ERROR: ' + JSON.stringify(error2)); });
+                }).catch(function (error3) {
+                    alert('44 ERROR' + JSON.stringify(error3));
+                });
+                return [2 /*return*/];
             });
         });
     };
-    AppComponent.ctorParameters = function () { return [
-        { type: _services_liff_service__WEBPACK_IMPORTED_MODULE_2__["LiffService"] }
-    ]; };
+    AppComponent.prototype.liffCheckAvailablityAndDo = function (callbackIfAvailable) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                try {
+                    liff.bluetooth.getAvailability().then(function (isAvailable) {
+                        _this.statusBle = true;
+                        alert('45 ' + JSON.stringify(isAvailable));
+                        callbackIfAvailable();
+                    });
+                    // if (isAvailable) {
+                    //   callbackIfAvailable();
+                    // } else {
+                    //   this.statusBle = false;
+                    //   setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
+                    // }
+                }
+                catch (error) {
+                    alert('Bluetooth をオンにしてください！');
+                }
+                return [2 /*return*/];
+            });
+        });
+    };
+    AppComponent.prototype.liffRequestDevice = function () {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                liff.bluetooth.requestDevice().then(function (device) {
+                    alert('58' + JSON.stringify(device));
+                    _this.liffConnectToDevice(device);
+                }).catch(function (error) {
+                    alert('61' + JSON.stringify(error));
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
+    AppComponent.prototype.liffConnectToDevice = function (device) {
+        var _this = this;
+        device.gatt.connect().then(function () {
+            device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
+                _this.liffGetUserService(service);
+            }).catch(function (error) {
+                alert(JSON.stringify(error));
+            });
+            device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
+                _this.liffGetPSDIService(service);
+            }).catch(function (error) {
+                alert(JSON.stringify(error));
+            });
+        });
+    };
+    AppComponent.prototype.liffGetUserService = function (service) {
+        alert(JSON.stringify(service));
+        // service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
+        //   this.liffGetButtonStateCharacteristic(characteristic);
+        // }).catch((error) => {
+        //   alert(JSON.stringify(error));
+        // });
+        // service.getCharacteristic(LED_CHARACTERISTIC_UUID).then(characteristic => {
+        //   // window= characteristic;
+        //   this.liffToggleDeviceLedState(false);
+        // });
+    };
+    AppComponent.prototype.liffGetPSDIService = function (service) {
+        alert(JSON.stringify(service));
+    };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
             selector: 'app-root',
@@ -244,6 +275,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/material/button */ "./node_modules/@angular/material/esm5/button.es5.js");
 /* harmony import */ var _angular_material_input__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/material/input */ "./node_modules/@angular/material/esm5/input.es5.js");
 /* harmony import */ var _angular_material_form_field__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/material/form-field */ "./node_modules/@angular/material/esm5/form-field.es5.js");
+/* harmony import */ var _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material/toolbar */ "./node_modules/@angular/material/esm5/toolbar.es5.js");
+
 
 
 
@@ -260,190 +293,18 @@ var MaterialModuleModule = /** @class */ (function () {
                 _angular_common__WEBPACK_IMPORTED_MODULE_2__["CommonModule"],
                 _angular_material_button__WEBPACK_IMPORTED_MODULE_3__["MatButtonModule"],
                 _angular_material_input__WEBPACK_IMPORTED_MODULE_4__["MatInputModule"],
-                _angular_material_form_field__WEBPACK_IMPORTED_MODULE_5__["MatFormFieldModule"]
+                _angular_material_form_field__WEBPACK_IMPORTED_MODULE_5__["MatFormFieldModule"],
+                _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_6__["MatToolbarModule"],
             ],
             exports: [
                 _angular_material_button__WEBPACK_IMPORTED_MODULE_3__["MatButtonModule"],
                 _angular_material_input__WEBPACK_IMPORTED_MODULE_4__["MatInputModule"],
-                _angular_material_form_field__WEBPACK_IMPORTED_MODULE_5__["MatFormFieldModule"]
+                _angular_material_form_field__WEBPACK_IMPORTED_MODULE_5__["MatFormFieldModule"],
+                _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_6__["MatToolbarModule"],
             ]
         })
     ], MaterialModuleModule);
     return MaterialModuleModule;
-}());
-
-
-
-/***/ }),
-
-/***/ "./src/app/services/liff.service.ts":
-/*!******************************************!*\
-  !*** ./src/app/services/liff.service.ts ***!
-  \******************************************/
-/*! exports provided: LiffService */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LiffService", function() { return LiffService; });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-
-
-var USER_SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
-var PSDI_SERVICE_UUID = 'e625601e-9e55-4597-a598-76018a0d293d';
-var PSDI_CHARACTERISTIC_UUID = '26e2b12b-85f0-4f3f-9fdd-91d114270e6e';
-var deviceUUIDSet = new Set();
-var connectedUUIDSet = new Set();
-var connectingUUIDSet = new Set();
-var notificationUUIDSet = new Set();
-var LiffService = /** @class */ (function () {
-    function LiffService() {
-    }
-    // makeErrorMsg(errObj) {
-    //   return `Error\n${errObj.code}\n${errObj.message}`;
-    // }
-    LiffService.prototype.initLineLiff = function () {
-        var _this = this;
-        return new Promise(function (resolveLiff, rejectLiff) {
-            liff.init(function () {
-                _this.initializeLiff();
-            }, function (err) {
-                console.log('initLineLiff', err);
-                // this.uiStatusError(this.makeErrorMsg(err), false);
-            });
-        });
-    };
-    LiffService.prototype.initializeLiff = function () {
-        var _this = this;
-        liff
-            .initPlugins(['bluetooth'])
-            .then(function () {
-            _this.liffCheckAvailablityAndDo(function () { return _this.liffRequestDevice(); });
-        })
-            .catch(function (err) {
-            console.log('initializeLiff', err);
-            // this.uiStatusError(this.makeErrorMsg(err), false);
-        });
-    };
-    LiffService.prototype.liffCheckAvailablityAndDo = function (callbackIfAvailable) {
-        var _this = this;
-        liff.bluetooth
-            .getAvailability()
-            .then(function (isAvailable) {
-            if (isAvailable) {
-                _this.uiToggleDeviceConnected(false);
-                callbackIfAvailable();
-            }
-            else {
-                // this.uiStatusError('Bluetooth not available', true);
-                setTimeout(function () { return _this.liffCheckAvailablityAndDo(callbackIfAvailable); }, 10000);
-            }
-        })
-            .catch(function (error) {
-            // this.uiStatusError(makeErrorMsg(error), false);
-            console.log(error);
-        });
-    };
-    LiffService.prototype.liffRequestDevice = function () {
-        var _this = this;
-        liff.bluetooth
-            .requestDevice()
-            .then(function (device) {
-            _this.liffConnectToDevice(device);
-        })
-            .catch(function (error) {
-            // this.uiStatusError(makeErrorMsg(error), false);
-            console.log(error);
-        });
-    };
-    LiffService.prototype.liffConnectToDevice = function (device) {
-        var _this = this;
-        device.gatt.connect().then(function () {
-            // document.getElementById('device-name').innerText = device.name;
-            // document.getElementById('device-id').innerText = device.id;
-            // // Show status connected
-            _this.uiToggleDeviceConnected(true);
-            // device.gatt
-            //   .getPrimaryService(USER_SERVICE_UUID)
-            //   .then(service => {
-            //     this.liffGetUserService(service);
-            //   })
-            //   .catch(error => {
-            //     console.log(error);
-            //     // this.uiStatusError(makeErrorMsg(error), false);
-            //   });
-            device.gatt
-                .getPrimaryService(PSDI_SERVICE_UUID)
-                .then(function (service) {
-                _this.liffGetPSDIService(service);
-            })
-                .catch(function (error) {
-                console.log(error);
-                // uiStatusError(makeErrorMsg(error), false);
-            });
-            var disconnectCallback = function () {
-                // Show status disconnected
-                _this.uiToggleDeviceConnected(false);
-                // Remove disconnect callback
-                device.removeEventListener('gattserverdisconnected', disconnectCallback);
-                // Reset LED state
-                // ledState = false;
-                // Reset UI elements
-                // uiToggleLedButton(false);
-                // uiToggleStateButton(false);
-                // Try to reconnect
-                _this.initLineLiff();
-            };
-            device.addEventListener('gattserverdisconnected', disconnectCallback);
-        }).catch(function (error) {
-            console.log(error);
-            // uiStatusError(makeErrorMsg(error), false);
-        });
-    };
-    LiffService.prototype.uiToggleDeviceConnected = function (connected) {
-        // const elStatus = document.getElementById("status");
-        // const elControls = document.getElementById("controls");
-        // elStatus.classList.remove("error");
-        if (connected) {
-            console.log(connected);
-            // Hide loading animation
-            // this.uiToggleLoadingAnimation(false);
-            // Show status connected
-            // elStatus.classList.remove("inactive");
-            // elStatus.classList.add("success");
-            // elStatus.innerText = "Device connected";
-            // // Show controls
-            // elControls.classList.remove("hidden");
-        }
-        else {
-            console.log('Not Connected');
-            // Show loading animation
-            // this.uiToggleLoadingAnimation(true);
-            // Show status disconnected
-            // elStatus.classList.remove("success");
-            // elStatus.classList.add("inactive");
-            // elStatus.innerText = "Device disconnected";
-            // // Hide controls
-            // elControls.classList.add("hidden");
-        }
-    };
-    LiffService.prototype.liffGetPSDIService = function (service) {
-        service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {
-            return characteristic.readValue();
-        }).then(function (value) {
-            var psdi = new Uint8Array(value.buffer).reduce(function (output, byte) { return output + ('0' + byte.toString(16)).slice(-2); }, '');
-        }).catch(function (error) {
-            console.log(error);
-            // this.uiStatusError(makeErrorMsg(error), false);
-        });
-    };
-    LiffService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
-            providedIn: 'root'
-        })
-    ], LiffService);
-    return LiffService;
 }());
 
 
