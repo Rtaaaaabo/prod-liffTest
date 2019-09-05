@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar>Line Things APP</mat-toolbar>\n<div class=\"container\">\n    <div class=\"text-center\">\n      <p>\n        <span *ngIf=\"statusBle\">接続しました</span>\n        <span *ngIf=\"!statusBle\">接続しておりません</span>\n      </p>\n      <br>\n      <div *ngIf=\"statusBle\" class=\"d-flex\">\n        {{userProfile | json}}\n      </div>\n      <div *ngIf=\"!statusBle\" class=\"d-flex\">\n          調子が悪い時は再起動してみてね！\n        </div>\n      <!-- <div>\n        <input matInput class=\"form-control\" type=\"text\" [(ngModel)]=\"messages\">\n        <br>\n        <button class=\"btn btn-primary\" (click)=\"sendMessages()\">send</button>\n      </div> -->\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
+module.exports = "<mat-toolbar>Line Things APP</mat-toolbar>\n<div class=\"container\">\n    <div class=\"text-center\">\n      <p>\n        <span *ngIf=\"statusBle\">接続しました</span>\n        <!-- <span *ngIf=\"statusBle\">接続しておりません</span> -->\n      </p>\n      <br>\n      <div *ngIf=\"statusBle\" class=\"d-flex\">\n        つながっているよ！\n      </div>\n      <div *ngIf=\"!statusBle\" class=\"d-flex\">\n          調子が悪い時は再起動してみてね！\n        </div>\n      <!-- <div>\n        <input matInput class=\"form-control\" type=\"text\" [(ngModel)]=\"messages\">\n        <br>\n        <button class=\"btn btn-primary\" (click)=\"sendMessages()\">send</button>\n      </div> -->\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
 
 /***/ }),
 
@@ -102,7 +102,7 @@ var AppComponent = /** @class */ (function () {
     function AppComponent() {
         this.title = 'LIFF Mock';
         this.messages = '';
-        this.statusBle = false;
+        this.statusBle = true;
     }
     AppComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -110,12 +110,16 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.initLineLiff = function () {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
                 liff.initPlugins(['bluetooth']).then(function () {
                     liff.bluetooth.getAvailability().then(function (isAvailable) {
                         // alert('37 ' + JSON.stringify(liff));
                         liff.bluetooth.requestDevice().then(function (device) {
-                            alert('DEVICE: ' + JSON.stringify(device));
+                            _this.statusBle = true;
+                            alert('39 ' + device.gatt.device.name);
+                            // device.watchAdvertisements();
+                            device.gatt.connect();
                         }).catch(function (error1) { return alert('41 ERROR: ' + JSON.stringify(error1)); });
                     }).catch(function (error2) { return alert('42 ERROR: ' + JSON.stringify(error2)); });
                 }).catch(function (error3) {
@@ -125,44 +129,23 @@ var AppComponent = /** @class */ (function () {
             });
         });
     };
-    AppComponent.prototype.liffCheckAvailablityAndDo = function (callbackIfAvailable) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            var _this = this;
-            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                try {
-                    liff.bluetooth.getAvailability().then(function (isAvailable) {
-                        _this.statusBle = true;
-                        alert('45 ' + JSON.stringify(isAvailable));
-                        callbackIfAvailable();
-                    });
-                    // if (isAvailable) {
-                    //   callbackIfAvailable();
-                    // } else {
-                    //   this.statusBle = false;
-                    //   setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
-                    // }
-                }
-                catch (error) {
-                    alert('Bluetooth をオンにしてください！');
-                }
-                return [2 /*return*/];
-            });
-        });
-    };
-    AppComponent.prototype.liffRequestDevice = function () {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            var _this = this;
-            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                liff.bluetooth.requestDevice().then(function (device) {
-                    alert('58' + JSON.stringify(device));
-                    _this.liffConnectToDevice(device);
-                }).catch(function (error) {
-                    alert('61' + JSON.stringify(error));
-                });
-                return [2 /*return*/];
-            });
-        });
-    };
+    // async liffCheckAvailablityAndDo(callbackIfAvailable) {
+    //   try {
+    //     liff.bluetooth.getAvailability().then((isAvailable) => {
+    //       this.statusBle = true;
+    //       alert('45 ' + JSON.stringify(isAvailable));
+    //       callbackIfAvailable();
+    //     });
+    //     // if (isAvailable) {
+    //     //   callbackIfAvailable();
+    //     // } else {
+    //     //   this.statusBle = false;
+    //     //   setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
+    //     // }
+    //   } catch (error) {
+    //     alert('Bluetooth をオンにしてください！');
+    //   }
+    // }
     AppComponent.prototype.liffConnectToDevice = function (device) {
         var _this = this;
         device.gatt.connect().then(function () {
