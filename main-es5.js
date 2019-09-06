@@ -134,7 +134,7 @@ var AppComponent = /** @class */ (function () {
                         service = _b.sent();
                         alert(service);
                         _a = this;
-                        return [4 /*yield*/, service.getCharacteristic(PSDI_CHARACTERISTIC_UUID)];
+                        return [4 /*yield*/, service.getCharacteristic(PSDI_SERVICE_UUID)];
                     case 5:
                         _a.characteristic = _b.sent();
                         this.characteristic.readValue().then(function (bufferData) {
