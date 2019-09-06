@@ -134,13 +134,13 @@ var AppComponent = /** @class */ (function () {
                         service = _b.sent();
                         alert(service);
                         _a = this;
-                        return [4 /*yield*/, service.getCharacteristic(BTN_CHARACTERISTIC_UUID)];
+                        return [4 /*yield*/, service.getCharacteristic(PSDI_CHARACTERISTIC_UUID)];
                     case 5:
                         _a.characteristic = _b.sent();
                         this.characteristic.readValue().then(function (bufferData) {
                             alert(bufferData);
-                            // const binaryData = String.fromCharCode.apply('', new Uint32Array(bufferData));
-                            // alert('binaryData : ' + binaryData);
+                            var binaryData = String.fromCharCode.apply('', new Uint32Array(bufferData));
+                            alert('binaryData : ' + binaryData);
                             // const dv = new DataView(bufferData);
                             // const binaryData = dv.getUint32(4);
                         });

@@ -118,11 +118,11 @@ let AppComponent = class AppComponent {
             const gatt = yield device.gatt.connect();
             const service = yield gatt.getPrimaryService(SERVICE_UUID);
             alert(service);
-            this.characteristic = yield service.getCharacteristic(BTN_CHARACTERISTIC_UUID);
+            this.characteristic = yield service.getCharacteristic(PSDI_CHARACTERISTIC_UUID);
             this.characteristic.readValue().then((bufferData) => {
                 alert(bufferData);
-                // const binaryData = String.fromCharCode.apply('', new Uint32Array(bufferData));
-                // alert('binaryData : ' + binaryData);
+                const binaryData = String.fromCharCode.apply('', new Uint32Array(bufferData));
+                alert('binaryData : ' + binaryData);
                 // const dv = new DataView(bufferData);
                 // const binaryData = dv.getUint32(4);
             });
