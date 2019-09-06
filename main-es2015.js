@@ -91,7 +91,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
 // const LED_CHARACTERISTIC_UUID   = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
-// const BTN_CHARACTERISTIC_UUID   = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
+const BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
 // PSDI Service UUID: Fixed value for Developer Trial
 const PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
 const PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
@@ -102,35 +102,88 @@ let AppComponent = class AppComponent {
         this.statusBle = true;
     }
     ngOnInit() {
-        liff.init(() => this.initLineLiff(), (error) => alert('31' + JSON.stringify(error)));
-    }
-    ngOnChange() {
-        alert('ngOnChange');
-        this.characteristic.addEventListerner('characteristicvaluechanged', (e) => {
-            alert('ここには入ってこない');
-            alert(e.target.value);
-        });
+        liff.init(() => this.initLineLiff(), error => alert('31' + JSON.stringify(error)));
     }
     initLineLiff() {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            yield liff.initPlugins(['bluetooth']);
-            const device = yield liff.bluetooth.requestDevice();
-            const gatt = yield device.gatt.connect();
-            const service = yield gatt.getPrimaryService(PSDI_SERVICE_UUID);
-            this.characteristic = yield service.getCharacteristic(PSDI_CHARACTERISTIC_UUID);
-            this.characteristic.readValue().then((bufferData) => {
-                alert(bufferData);
-                const binaryData = String.fromCharCode.apply('', new Uint32Array(bufferData));
-                alert('binaryData : ' + binaryData);
-                // const dv = new DataView(bufferData);
-                // const binaryData = dv.getUint32(4);
+            liff.initPlugins(['bluetooth']).then(() => {
+                this.liffCheckAvailablityAndDo(() => this.liffRequestDevice());
             });
-            this.characteristic.addEventListerner('characteristicvaluechanged', (e) => {
-                alert('ここには入ってこない');
-                alert(e.target.value);
-            });
-            yield this.characteristic.startNotifications();
         });
+    }
+    liffCheckAvailablityAndDo(callbackIfAvailable) {
+        liff.bluetooth.getAvailability().then(isAvailable => {
+            if (isAvailable) {
+                // this.uiToggleDeviceConnected(false);
+                callbackIfAvailable();
+            }
+            else {
+                setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
+            }
+        });
+    }
+    liffRequestDevice() {
+        liff.bluetooth.requestDevice().then(device => {
+            this.liffConnectToDevice(device);
+        });
+    }
+    liffConnectToDevice(device) {
+        device.gatt.connect().then(() => {
+            // this.uiToggleDeviceConnected(true);
+            device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
+                this.liffGetUserService(service);
+            });
+        });
+        device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
+            this.liffGetPSDIService(service);
+        });
+        const disconnectCallback = () => {
+            // this.uiToggleDeviceConnected(false);
+            device.removeEventListener('gattserverdisconnected', disconnectCallback);
+            // this.uiToggleLedButton(false);
+            // this.uiToggleStateButton(false);
+            this.initLineLiff();
+        };
+        device.addEventListener('gattserverdisconnected', disconnectCallback);
+    }
+    liffGetUserService(service) {
+        service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
+            this.liffGetButtonStateCharacteristic(characteristic);
+        });
+    }
+    liffGetPSDIService(service) {
+        service
+            .getCharacteristic(PSDI_CHARACTERISTIC_UUID)
+            .then(characteristic => {
+            return characteristic.readValue();
+        })
+            .then(value => {
+            const psdi = new Uint8Array(value.buffer).reduce((output, byte) => output + ('0' + byte.toString(16)).slice(-2), '');
+        });
+    }
+    liffGetButtonStateCharacteristic(characteristic) {
+        characteristic
+            .startNotifications()
+            .then(() => {
+            characteristic.addEventListener('characteristicvaluechanged', e => {
+                const val = new Uint8Array(e.target.value.buffer)[0];
+                if (val > 0) {
+                    // press
+                    // uiToggleStateButton(true);
+                }
+                else {
+                    // release
+                    // uiToggleStateButton(false);
+                    // uiCountPressButton();
+                }
+            });
+        })
+            .catch(error => {
+            // uiStatusError(makeErrorMsg(error), false);
+        });
+    }
+    liffToggleDeviceLedState(state) {
+        alert('state : ' + state);
     }
 };
 AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([

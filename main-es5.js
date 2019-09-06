@@ -94,7 +94,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
 // const LED_CHARACTERISTIC_UUID   = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
-// const BTN_CHARACTERISTIC_UUID   = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
+var BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
 // PSDI Service UUID: Fixed value for Developer Trial
 var PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
 var PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
@@ -108,52 +108,94 @@ var AppComponent = /** @class */ (function () {
         var _this = this;
         liff.init(function () { return _this.initLineLiff(); }, function (error) { return alert('31' + JSON.stringify(error)); });
     };
-    AppComponent.prototype.ngOnChange = function () {
-        alert('ngOnChange');
-        this.characteristic.addEventListerner('characteristicvaluechanged', function (e) {
-            alert('ここには入ってこない');
-            alert(e.target.value);
-        });
-    };
     AppComponent.prototype.initLineLiff = function () {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            var device, gatt, service, _a;
-            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, liff.initPlugins(['bluetooth'])];
-                    case 1:
-                        _b.sent();
-                        return [4 /*yield*/, liff.bluetooth.requestDevice()];
-                    case 2:
-                        device = _b.sent();
-                        return [4 /*yield*/, device.gatt.connect()];
-                    case 3:
-                        gatt = _b.sent();
-                        return [4 /*yield*/, gatt.getPrimaryService(PSDI_SERVICE_UUID)];
-                    case 4:
-                        service = _b.sent();
-                        _a = this;
-                        return [4 /*yield*/, service.getCharacteristic(PSDI_CHARACTERISTIC_UUID)];
-                    case 5:
-                        _a.characteristic = _b.sent();
-                        this.characteristic.readValue().then(function (bufferData) {
-                            alert(bufferData);
-                            var binaryData = String.fromCharCode.apply('', new Uint32Array(bufferData));
-                            alert('binaryData : ' + binaryData);
-                            // const dv = new DataView(bufferData);
-                            // const binaryData = dv.getUint32(4);
-                        });
-                        this.characteristic.addEventListerner('characteristicvaluechanged', function (e) {
-                            alert('ここには入ってこない');
-                            alert(e.target.value);
-                        });
-                        return [4 /*yield*/, this.characteristic.startNotifications()];
-                    case 6:
-                        _b.sent();
-                        return [2 /*return*/];
-                }
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                liff.initPlugins(['bluetooth']).then(function () {
+                    _this.liffCheckAvailablityAndDo(function () { return _this.liffRequestDevice(); });
+                });
+                return [2 /*return*/];
             });
         });
+    };
+    AppComponent.prototype.liffCheckAvailablityAndDo = function (callbackIfAvailable) {
+        var _this = this;
+        liff.bluetooth.getAvailability().then(function (isAvailable) {
+            if (isAvailable) {
+                // this.uiToggleDeviceConnected(false);
+                callbackIfAvailable();
+            }
+            else {
+                setTimeout(function () { return _this.liffCheckAvailablityAndDo(callbackIfAvailable); }, 10000);
+            }
+        });
+    };
+    AppComponent.prototype.liffRequestDevice = function () {
+        var _this = this;
+        liff.bluetooth.requestDevice().then(function (device) {
+            _this.liffConnectToDevice(device);
+        });
+    };
+    AppComponent.prototype.liffConnectToDevice = function (device) {
+        var _this = this;
+        device.gatt.connect().then(function () {
+            // this.uiToggleDeviceConnected(true);
+            device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
+                _this.liffGetUserService(service);
+            });
+        });
+        device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
+            _this.liffGetPSDIService(service);
+        });
+        var disconnectCallback = function () {
+            // this.uiToggleDeviceConnected(false);
+            device.removeEventListener('gattserverdisconnected', disconnectCallback);
+            // this.uiToggleLedButton(false);
+            // this.uiToggleStateButton(false);
+            _this.initLineLiff();
+        };
+        device.addEventListener('gattserverdisconnected', disconnectCallback);
+    };
+    AppComponent.prototype.liffGetUserService = function (service) {
+        var _this = this;
+        service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(function (characteristic) {
+            _this.liffGetButtonStateCharacteristic(characteristic);
+        });
+    };
+    AppComponent.prototype.liffGetPSDIService = function (service) {
+        service
+            .getCharacteristic(PSDI_CHARACTERISTIC_UUID)
+            .then(function (characteristic) {
+            return characteristic.readValue();
+        })
+            .then(function (value) {
+            var psdi = new Uint8Array(value.buffer).reduce(function (output, byte) { return output + ('0' + byte.toString(16)).slice(-2); }, '');
+        });
+    };
+    AppComponent.prototype.liffGetButtonStateCharacteristic = function (characteristic) {
+        characteristic
+            .startNotifications()
+            .then(function () {
+            characteristic.addEventListener('characteristicvaluechanged', function (e) {
+                var val = new Uint8Array(e.target.value.buffer)[0];
+                if (val > 0) {
+                    // press
+                    // uiToggleStateButton(true);
+                }
+                else {
+                    // release
+                    // uiToggleStateButton(false);
+                    // uiCountPressButton();
+                }
+            });
+        })
+            .catch(function (error) {
+            // uiStatusError(makeErrorMsg(error), false);
+        });
+    };
+    AppComponent.prototype.liffToggleDeviceLedState = function (state) {
+        alert('state : ' + state);
     };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
