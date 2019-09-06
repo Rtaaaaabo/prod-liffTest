@@ -93,7 +93,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
-var LED_CHARACTERISTIC_UUID = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
+// const LED_CHARACTERISTIC_UUID   = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
 var BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
 // PSDI Service UUID: Fixed value for Developer Trial
 var PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
@@ -108,73 +108,53 @@ var AppComponent = /** @class */ (function () {
         var _this = this;
         liff.init(function () { return _this.initLineLiff(); }, function (error) { return alert('31' + JSON.stringify(error)); });
     };
+    AppComponent.prototype.ngOnChange = function () {
+        alert('ngOnChange');
+        this.characteristic.addEventListerner('characteristicvaluechanged', function (e) {
+            alert('ここには入ってこない');
+            alert(e.target.value);
+        });
+    };
     AppComponent.prototype.initLineLiff = function () {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            var _this = this;
-            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                liff.initPlugins(['bluetooth']).then(function () {
-                    liff.bluetooth.getAvailability().then(function (isAvailable) {
-                        // alert('37 ' + JSON.stringify(liff));
-                        liff.bluetooth.requestDevice().then(function (device) {
-                            _this.statusBle = true;
-                            alert('39 ' + device.gatt.device.name);
-                            // device.watchAdvertisements();
-                            device.gatt.connect();
-                        }).catch(function (error1) { return alert('41 ERROR: ' + JSON.stringify(error1)); });
-                    }).catch(function (error2) { return alert('42 ERROR: ' + JSON.stringify(error2)); });
-                }).catch(function (error3) {
-                    alert('44 ERROR' + JSON.stringify(error3));
-                });
-                return [2 /*return*/];
+            var device, gatt, service, _a;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, liff.initPlugins(['bluetooth'])];
+                    case 1:
+                        _b.sent();
+                        return [4 /*yield*/, liff.bluetooth.requestDevice()];
+                    case 2:
+                        device = _b.sent();
+                        return [4 /*yield*/, device.gatt.connect()];
+                    case 3:
+                        gatt = _b.sent();
+                        return [4 /*yield*/, gatt.getPrimaryService(SERVICE_UUID)];
+                    case 4:
+                        service = _b.sent();
+                        alert(service);
+                        _a = this;
+                        return [4 /*yield*/, service.getCharacteristic(BTN_CHARACTERISTIC_UUID)];
+                    case 5:
+                        _a.characteristic = _b.sent();
+                        this.characteristic.readValue().then(function (bufferData) {
+                            alert(bufferData);
+                            // const binaryData = String.fromCharCode.apply('', new Uint32Array(bufferData));
+                            // alert('binaryData : ' + binaryData);
+                            // const dv = new DataView(bufferData);
+                            // const binaryData = dv.getUint32(4);
+                        });
+                        this.characteristic.addEventListerner('characteristicvaluechanged', function (e) {
+                            alert('ここには入ってこない');
+                            alert(e.target.value);
+                        });
+                        return [4 /*yield*/, this.characteristic.startNotifications()];
+                    case 6:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
             });
         });
-    };
-    // async liffCheckAvailablityAndDo(callbackIfAvailable) {
-    //   try {
-    //     liff.bluetooth.getAvailability().then((isAvailable) => {
-    //       this.statusBle = true;
-    //       alert('45 ' + JSON.stringify(isAvailable));
-    //       callbackIfAvailable();
-    //     });
-    //     // if (isAvailable) {
-    //     //   callbackIfAvailable();
-    //     // } else {
-    //     //   this.statusBle = false;
-    //     //   setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
-    //     // }
-    //   } catch (error) {
-    //     alert('Bluetooth をオンにしてください！');
-    //   }
-    // }
-    AppComponent.prototype.liffConnectToDevice = function (device) {
-        var _this = this;
-        device.gatt.connect().then(function () {
-            device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
-                _this.liffGetUserService(service);
-            }).catch(function (error) {
-                alert(JSON.stringify(error));
-            });
-            device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
-                _this.liffGetPSDIService(service);
-            }).catch(function (error) {
-                alert(JSON.stringify(error));
-            });
-        });
-    };
-    AppComponent.prototype.liffGetUserService = function (service) {
-        alert(JSON.stringify(service));
-        // service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
-        //   this.liffGetButtonStateCharacteristic(characteristic);
-        // }).catch((error) => {
-        //   alert(JSON.stringify(error));
-        // });
-        // service.getCharacteristic(LED_CHARACTERISTIC_UUID).then(characteristic => {
-        //   // window= characteristic;
-        //   this.liffToggleDeviceLedState(false);
-        // });
-    };
-    AppComponent.prototype.liffGetPSDIService = function (service) {
-        alert(JSON.stringify(service));
     };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
