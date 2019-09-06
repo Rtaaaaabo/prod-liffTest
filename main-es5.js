@@ -94,7 +94,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
 // const LED_CHARACTERISTIC_UUID   = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
-var BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
+// const BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
 // PSDI Service UUID: Fixed value for Developer Trial
 var PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
 var PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
@@ -123,6 +123,7 @@ var AppComponent = /** @class */ (function () {
         var _this = this;
         liff.bluetooth.getAvailability().then(function (isAvailable) {
             if (isAvailable) {
+                // alert('isAvailable : ' + isAvailable);
                 // this.uiToggleDeviceConnected(false);
                 callbackIfAvailable();
             }
@@ -134,6 +135,7 @@ var AppComponent = /** @class */ (function () {
     AppComponent.prototype.liffRequestDevice = function () {
         var _this = this;
         liff.bluetooth.requestDevice().then(function (device) {
+            // alert('device.id: ' + device.id);
             _this.liffConnectToDevice(device);
         });
     };
@@ -142,11 +144,13 @@ var AppComponent = /** @class */ (function () {
         device.gatt.connect().then(function () {
             // this.uiToggleDeviceConnected(true);
             device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
-                _this.liffGetUserService(service);
+                // alert('SERVICE_UUID service.device' + service.device);
+                // this.liffGetUserService(service);
             });
-        });
-        device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
-            _this.liffGetPSDIService(service);
+            device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
+                // alert('PSDI_SERVICE_UUID service.device' + service.device);
+                _this.liffGetPSDIService(service);
+            });
         });
         var disconnectCallback = function () {
             // this.uiToggleDeviceConnected(false);
@@ -158,27 +162,40 @@ var AppComponent = /** @class */ (function () {
         device.addEventListener('gattserverdisconnected', disconnectCallback);
     };
     AppComponent.prototype.liffGetUserService = function (service) {
-        var _this = this;
-        service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(function (characteristic) {
-            _this.liffGetButtonStateCharacteristic(characteristic);
-        });
+        // service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
+        //   this.liffGetButtonStateCharacteristic(characteristic);
+        // });
     };
     AppComponent.prototype.liffGetPSDIService = function (service) {
-        service
-            .getCharacteristic(PSDI_CHARACTERISTIC_UUID)
-            .then(function (characteristic) {
-            return characteristic.readValue();
-        })
-            .then(function (value) {
-            var psdi = new Uint8Array(value.buffer).reduce(function (output, byte) { return output + ('0' + byte.toString(16)).slice(-2); }, '');
+        service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {
+            //
+            characteristic.startNotifications().then(function (char) {
+                alert(char);
+            }).catch(function (error1) { return alert('startNotifications: ' + error1); });
+            // characteristic.startNotifications().then(char => {
+            //   characteristic.addEventListener('characteristicvaluechanged', (event) => {
+            //     alert(event);
+            //   }).catch(error1 => alert('addEventListener: ' + error1));
+            // }).catch(error => alert('startNotifications: ' + error));
+            //
+            // return characteristic.addEventListener('characteristicvaluechanged', e => {
+            //   const val = new Uint8Array(e.target.value.buffer)[0];
+            //   alert(val);
+            // });
+            // return characteristic.readValue();
         });
+        // .then(value => {
+        //   // alert(value);
+        //   // const psdi = new Uint8Array(value.buffer).reduce((output, byte) => output + ('0' + byte.toString(16)).slice(-2), '');
+        //   const psdi = new Uint8Array(value.buffer);
+        //   alert(psdi);
+        // }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
     };
     AppComponent.prototype.liffGetButtonStateCharacteristic = function (characteristic) {
-        characteristic
-            .startNotifications()
-            .then(function () {
+        characteristic.startNotifications().then(function () {
             characteristic.addEventListener('characteristicvaluechanged', function (e) {
                 var val = new Uint8Array(e.target.value.buffer)[0];
+                alert(val);
                 if (val > 0) {
                     // press
                     // uiToggleStateButton(true);
