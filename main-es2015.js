@@ -134,7 +134,7 @@ let AppComponent = class AppComponent {
             // this.uiToggleDeviceConnected(true);
             device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
                 // alert('SERVICE_UUID service.device' + service.device);
-                // this.liffGetUserService(service);
+                this.liffGetUserService(service);
             });
             device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
                 // alert('PSDI_SERVICE_UUID service.device' + service.device);
@@ -158,9 +158,9 @@ let AppComponent = class AppComponent {
     liffGetPSDIService(service) {
         service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(characteristic => {
             //
-            characteristic.startNotifications().then(char => {
-                alert(char);
-            }).catch(error1 => alert('startNotifications: ' + error1));
+            // characteristic.startNotifications().then(char => {
+            //   alert(char);
+            // }).catch(error1 => alert('startNotifications: ' + error1));
             // characteristic.startNotifications().then(char => {
             //   characteristic.addEventListener('characteristicvaluechanged', (event) => {
             //     alert(event);
@@ -171,14 +171,14 @@ let AppComponent = class AppComponent {
             //   const val = new Uint8Array(e.target.value.buffer)[0];
             //   alert(val);
             // });
-            // return characteristic.readValue();
-        });
-        // .then(value => {
-        //   // alert(value);
-        //   // const psdi = new Uint8Array(value.buffer).reduce((output, byte) => output + ('0' + byte.toString(16)).slice(-2), '');
-        //   const psdi = new Uint8Array(value.buffer);
-        //   alert(psdi);
-        // }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
+            return characteristic.readValue();
+        })
+            .then(value => {
+            // alert(value);
+            // const psdi = new Uint8Array(value.buffer).reduce((output, byte) => output + ('0' + byte.toString(16)).slice(-2), '');
+            const psdi = new Uint8Array(value.buffer);
+            alert(psdi);
+        }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
     }
     liffGetButtonStateCharacteristic(characteristic) {
         characteristic.startNotifications().then(() => {
