@@ -125,19 +125,15 @@ let AppComponent = class AppComponent {
     }
     liffRequestDevice() {
         liff.bluetooth.requestDevice().then(device => {
-            // alert('device.id: ' + device.id);
             this.liffConnectToDevice(device);
         });
     }
     liffConnectToDevice(device) {
         device.gatt.connect().then(() => {
-            // this.uiToggleDeviceConnected(true);
             device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
-                // alert('SERVICE_UUID service.device' + service.device);
                 this.liffGetUserService(service);
             });
             device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
-                // alert('PSDI_SERVICE_UUID service.device' + service.device);
                 this.liffGetPSDIService(service);
             });
         });
@@ -157,43 +153,19 @@ let AppComponent = class AppComponent {
     }
     liffGetPSDIService(service) {
         service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(characteristic => {
-            //
-            // characteristic.startNotifications().then(char => {
-            //   alert(char);
-            // }).catch(error1 => alert('startNotifications: ' + error1));
-            // characteristic.startNotifications().then(char => {
-            //   characteristic.addEventListener('characteristicvaluechanged', (event) => {
-            //     alert(event);
-            //   }).catch(error1 => alert('addEventListener: ' + error1));
-            // }).catch(error => alert('startNotifications: ' + error));
-            //
-            // return characteristic.addEventListener('characteristicvaluechanged', e => {
-            //   const val = new Uint8Array(e.target.value.buffer)[0];
-            //   alert(val);
-            // });
             return characteristic.readValue();
         })
             .then(value => {
-            // alert(value);
-            // const psdi = new Uint8Array(value.buffer).reduce((output, byte) => output + ('0' + byte.toString(16)).slice(-2), '');
             const psdi = new Uint8Array(value.buffer);
-            alert(psdi);
         }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
     }
     liffGetButtonStateCharacteristic(characteristic) {
         characteristic.startNotifications().then(() => {
             characteristic.addEventListener('characteristicvaluechanged', e => {
                 const val = new Uint8Array(e.target.value.buffer)[0];
-                alert(val);
-                if (val > 0) {
-                    // press
-                    // uiToggleStateButton(true);
-                }
-                else {
-                    // release
-                    // uiToggleStateButton(false);
-                    // uiCountPressButton();
-                }
+                // if (val > 0) {
+                // } else {
+                // }
             });
         })
             .catch(error => {
