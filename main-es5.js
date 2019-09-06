@@ -93,8 +93,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
-// const LED_CHARACTERISTIC_UUID   = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
-// const BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
+var LED_CHARACTERISTIC_UUID = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
+var BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
 // PSDI Service UUID: Fixed value for Developer Trial
 var PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
 var PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
@@ -162,9 +162,10 @@ var AppComponent = /** @class */ (function () {
         device.addEventListener('gattserverdisconnected', disconnectCallback);
     };
     AppComponent.prototype.liffGetUserService = function (service) {
-        // service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
-        //   this.liffGetButtonStateCharacteristic(characteristic);
-        // });
+        var _this = this;
+        service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(function (characteristic) {
+            _this.liffGetButtonStateCharacteristic(characteristic);
+        });
     };
     AppComponent.prototype.liffGetPSDIService = function (service) {
         service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {
