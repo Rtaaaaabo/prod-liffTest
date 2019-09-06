@@ -94,7 +94,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
 // const LED_CHARACTERISTIC_UUID   = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
-var BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
+// const BTN_CHARACTERISTIC_UUID   = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
 // PSDI Service UUID: Fixed value for Developer Trial
 var PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
 var PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
@@ -129,12 +129,11 @@ var AppComponent = /** @class */ (function () {
                         return [4 /*yield*/, device.gatt.connect()];
                     case 3:
                         gatt = _b.sent();
-                        return [4 /*yield*/, gatt.getPrimaryService(SERVICE_UUID)];
+                        return [4 /*yield*/, gatt.getPrimaryService(PSDI_SERVICE_UUID)];
                     case 4:
                         service = _b.sent();
-                        alert(service);
                         _a = this;
-                        return [4 /*yield*/, service.getCharacteristic(BTN_CHARACTERISTIC_UUID)];
+                        return [4 /*yield*/, service.getCharacteristic(PSDI_CHARACTERISTIC_UUID)];
                     case 5:
                         _a.characteristic = _b.sent();
                         this.characteristic.readValue().then(function (bufferData) {
