@@ -124,7 +124,6 @@ let AppComponent = class AppComponent {
     }
     liffRequestDevice() {
         liff.bluetooth.requestDevice().then(device => {
-            alert(device.name);
             this.liffConnectToDevice(device);
         });
     }
@@ -190,7 +189,7 @@ let AppComponent = class AppComponent {
             });
         })
             .catch(error => {
-            alert(error);
+            alert('liffGetUltraDataCharacteristic ERROR: ' + error);
         });
     }
     liffToggleDeviceLedState(state) {

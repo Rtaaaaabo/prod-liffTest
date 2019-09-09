@@ -134,7 +134,6 @@ var AppComponent = /** @class */ (function () {
     AppComponent.prototype.liffRequestDevice = function () {
         var _this = this;
         liff.bluetooth.requestDevice().then(function (device) {
-            alert(device.name);
             _this.liffConnectToDevice(device);
         });
     };
@@ -203,7 +202,7 @@ var AppComponent = /** @class */ (function () {
             });
         })
             .catch(function (error) {
-            alert(error);
+            alert('liffGetUltraDataCharacteristic ERROR: ' + error);
         });
     };
     AppComponent.prototype.liffToggleDeviceLedState = function (state) {
