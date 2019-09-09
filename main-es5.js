@@ -172,7 +172,8 @@ var AppComponent = /** @class */ (function () {
         })
             .then(function (value) {
             var ultraData = new Uint8Array(value.buffer);
-            alert(ultraData);
+            alert('value: ' + value);
+            alert('ultraData: ' + ultraData);
         }).catch(function (error) { return alert('liffGetUltraDataService ERROR: ' + error); });
     };
     AppComponent.prototype.liffGetPSDIService = function (service) {

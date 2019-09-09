@@ -159,7 +159,8 @@ let AppComponent = class AppComponent {
         })
             .then(value => {
             const ultraData = new Uint8Array(value.buffer);
-            alert(ultraData);
+            alert('value: ' + value);
+            alert('ultraData: ' + ultraData);
         }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
     }
     liffGetPSDIService(service) {
