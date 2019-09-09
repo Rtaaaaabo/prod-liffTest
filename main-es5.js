@@ -123,8 +123,6 @@ var AppComponent = /** @class */ (function () {
         var _this = this;
         liff.bluetooth.getAvailability().then(function (isAvailable) {
             if (isAvailable) {
-                // alert('isAvailable : ' + isAvailable);
-                // this.uiToggleDeviceConnected(false);
                 callbackIfAvailable();
             }
             else {
@@ -135,6 +133,8 @@ var AppComponent = /** @class */ (function () {
     AppComponent.prototype.liffRequestDevice = function () {
         var _this = this;
         liff.bluetooth.requestDevice().then(function (device) {
+            alert('GATT Connected: ' + device.gatt.connected);
+            device.gatt.connected = true;
             _this.liffConnectToDevice(device);
         });
     };
@@ -168,8 +168,8 @@ var AppComponent = /** @class */ (function () {
             return characteristic.readValue();
         })
             .then(function (value) {
+            alert(value);
             var psdi = new Uint8Array(value.buffer);
-            alert(psdi);
         }).catch(function (error) { return alert('liffGetPSDIService ERROR: ' + error); });
     };
     AppComponent.prototype.liffGetButtonStateCharacteristic = function (characteristic) {

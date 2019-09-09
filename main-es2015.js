@@ -114,8 +114,6 @@ let AppComponent = class AppComponent {
     liffCheckAvailablityAndDo(callbackIfAvailable) {
         liff.bluetooth.getAvailability().then(isAvailable => {
             if (isAvailable) {
-                // alert('isAvailable : ' + isAvailable);
-                // this.uiToggleDeviceConnected(false);
                 callbackIfAvailable();
             }
             else {
@@ -125,6 +123,8 @@ let AppComponent = class AppComponent {
     }
     liffRequestDevice() {
         liff.bluetooth.requestDevice().then(device => {
+            alert('GATT Connected: ' + device.gatt.connected);
+            device.gatt.connected = true;
             this.liffConnectToDevice(device);
         });
     }
@@ -156,8 +156,8 @@ let AppComponent = class AppComponent {
             return characteristic.readValue();
         })
             .then(value => {
+            alert(value);
             const psdi = new Uint8Array(value.buffer);
-            alert(psdi);
         }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
     }
     liffGetButtonStateCharacteristic(characteristic) {
