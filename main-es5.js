@@ -167,13 +167,11 @@ var AppComponent = /** @class */ (function () {
         var _this = this;
         service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(function (characteristic) {
             _this.liffGetUltraDataCharacteristic(characteristic);
-            return characteristic.readValue();
-        })
-            .then(function (value) {
-            var ultraData = new Uint8Array(value.buffer);
-            alert('value: ' + value);
-            alert('ultraData: ' + ultraData);
-        }).catch(function (error) { return alert('liffGetUltraDataService ERROR: ' + error); });
+        });
+        // .then(value => {
+        //   const ultraData = new Uint8Array(value.buffer);
+        //   alert('ultraData: ' + ultraData);
+        // }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
     };
     AppComponent.prototype.liffGetPSDIService = function (service) {
         service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {

@@ -154,13 +154,11 @@ let AppComponent = class AppComponent {
     liffGetUltraDataService(service) {
         service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(characteristic => {
             this.liffGetUltraDataCharacteristic(characteristic);
-            return characteristic.readValue();
-        })
-            .then(value => {
-            const ultraData = new Uint8Array(value.buffer);
-            alert('value: ' + value);
-            alert('ultraData: ' + ultraData);
-        }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
+        });
+        // .then(value => {
+        //   const ultraData = new Uint8Array(value.buffer);
+        //   alert('ultraData: ' + ultraData);
+        // }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
     }
     liffGetPSDIService(service) {
         service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(characteristic => {
