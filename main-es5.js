@@ -169,6 +169,7 @@ var AppComponent = /** @class */ (function () {
         })
             .then(function (value) {
             var psdi = new Uint8Array(value.buffer);
+            alert(psdi);
         }).catch(function (error) { return alert('liffGetPSDIService ERROR: ' + error); });
     };
     AppComponent.prototype.liffGetButtonStateCharacteristic = function (characteristic) {

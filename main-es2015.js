@@ -157,6 +157,7 @@ let AppComponent = class AppComponent {
         })
             .then(value => {
             const psdi = new Uint8Array(value.buffer);
+            alert(psdi);
         }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
     }
     liffGetButtonStateCharacteristic(characteristic) {
