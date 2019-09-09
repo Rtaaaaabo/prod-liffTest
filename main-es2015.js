@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar>Line Things APP</mat-toolbar>\n<div class=\"container\">\n    <div class=\"text-center\">\n      <p>\n        <span *ngIf=\"statusBle\">接続しました</span>\n        <!-- <span *ngIf=\"statusBle\">接続しておりません</span> -->\n      </p>\n      <br>\n      <div *ngIf=\"statusBle\" class=\"d-flex\">\n        つながっているよ！\n      </div>\n      <div *ngIf=\"!statusBle\" class=\"d-flex\">\n          調子が悪い時は再起動してみてね！\n        </div>\n      <!-- <div>\n        <input matInput class=\"form-control\" type=\"text\" [(ngModel)]=\"messages\">\n        <br>\n        <button class=\"btn btn-primary\" (click)=\"sendMessages()\">send</button>\n      </div> -->\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
+module.exports = "<mat-toolbar>Line Things APP</mat-toolbar>\n<div class=\"container\">\n    <div class=\"text-center\">\n      <p>\n        <span *ngIf=\"statusBle\">接続しました</span>\n      </p>\n      <br>\n      <div *ngIf=\"statusBle\" class=\"d-flex\">\n        つながっているよ！\n      </div>\n      <div *ngIf=\"!statusBle\" class=\"d-flex\">\n        調子が悪い時は再起動してみてね！\n       </div>\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
 
 /***/ }),
 
@@ -138,10 +138,7 @@ let AppComponent = class AppComponent {
             });
         });
         const disconnectCallback = () => {
-            // this.uiToggleDeviceConnected(false);
             device.removeEventListener('gattserverdisconnected', disconnectCallback);
-            // this.uiToggleLedButton(false);
-            // this.uiToggleStateButton(false);
             this.initLineLiff();
         };
         device.addEventListener('gattserverdisconnected', disconnectCallback);
@@ -153,12 +150,13 @@ let AppComponent = class AppComponent {
     }
     liffGetUltraDataService(service) {
         service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(characteristic => {
-            this.liffGetUltraDataCharacteristic(characteristic);
-        });
-        // .then(value => {
-        //   const ultraData = new Uint8Array(value.buffer);
-        //   alert('ultraData: ' + ultraData);
-        // }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
+            return characteristic.readValue();
+            // this.liffGetUltraDataCharacteristic(characteristic);
+        })
+            .then(value => {
+            const ultraData = new Uint8Array(value.buffer);
+            alert('UltraData: ' + ultraData);
+        }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
     }
     liffGetPSDIService(service) {
         service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(characteristic => {
