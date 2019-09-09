@@ -175,9 +175,7 @@ var AppComponent = /** @class */ (function () {
         characteristic.startNotifications().then(function () {
             characteristic.addEventListener('characteristicvaluechanged', function (e) {
                 var val = new Uint8Array(e.target.value.buffer)[0];
-                // if (val > 0) {
-                // } else {
-                // }
+                alert(val);
             });
         })
             .catch(function (error) {
