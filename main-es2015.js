@@ -167,7 +167,7 @@ let AppComponent = class AppComponent {
     }
     liffGetUltraDataService(service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            service.getCharacteristic(ULTRA_AFTER_CHARACTERISTIC_UUID).then(characteristic => {
+            service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(characteristic => {
                 return characteristic.readValue();
             })
                 .then(value => {
