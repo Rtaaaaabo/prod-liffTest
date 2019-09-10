@@ -171,11 +171,12 @@ let AppComponent = class AppComponent {
             })
                 .then(value => {
                 this.ultraData = new Uint8Array(value.buffer);
+                this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
                 alert(this.ultraData);
                 liff.sendMessages([
                     {
                         type: 'text',
-                        text: this.ultraData
+                        text: this.ultraDataMessage
                     },
                 ])
                     .then(() => {

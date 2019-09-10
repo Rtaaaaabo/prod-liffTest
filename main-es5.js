@@ -202,11 +202,12 @@ var AppComponent = /** @class */ (function () {
                 })
                     .then(function (value) {
                     _this.ultraData = new Uint8Array(value.buffer);
+                    _this.ultraDataMessage = String.fromCharCode.apply(null, _this.ultraData);
                     alert(_this.ultraData);
                     liff.sendMessages([
                         {
                             type: 'text',
-                            text: _this.ultraData
+                            text: _this.ultraDataMessage
                         },
                     ])
                         .then(function () {
