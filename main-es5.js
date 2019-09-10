@@ -219,7 +219,7 @@ var AppComponent = /** @class */ (function () {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
-                    _this.ultraDataAfter = value.getUint8(0, true);
+                    _this.ultraDataAfter = value.getUint8(6, true);
                     alert(_this.ultraDataAfter);
                     // let toEndianness = '';
                     // for (let n = 0; n < 128; n++) {
