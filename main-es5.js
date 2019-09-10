@@ -227,7 +227,7 @@ var AppComponent = /** @class */ (function () {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
             var _this = this;
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(function (characteristic) {
+                service.getCharacteristic(ULTRA_AFTER_CHARACTERISTIC_UUID).then(function (characteristic) {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
