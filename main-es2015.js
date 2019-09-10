@@ -184,6 +184,8 @@ let AppComponent = class AppComponent {
                 return characteristic.readValue();
             })
                 .then(value => {
+                this.ultraDataAfter = value.getUint8(0, true);
+                alert(this.ultraDataAfter);
                 // let toEndianness = '';
                 // for (let n = 0; n < 128; n++) {
                 //   toEndianness = value.getUint16(n, true);
