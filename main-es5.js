@@ -219,11 +219,11 @@ var AppComponent = /** @class */ (function () {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
-                    var toEndianness = '';
-                    for (var n = 0; n < 128; n++) {
-                        toEndianness = value.getUint16(n, true);
-                        alert('toEndianness: ' + toEndianness);
-                    }
+                    // let toEndianness = '';
+                    // for (let n = 0; n < 128; n++) {
+                    //   toEndianness = value.getUint16(n, true);
+                    //   alert('toEndianness: ' + toEndianness);
+                    // }
                     // const toEndianness = value.getUint16(0, true);
                     // for (let n = 0; n < 128; n++) {
                     //   if (n % 10 === 0) {
