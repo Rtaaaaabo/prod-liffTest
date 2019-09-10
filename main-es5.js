@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">SEND Messages</button>\n  </div>\n</div>\n\n<router-outlet></router-outlet>\n"
+module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">SEND Messages</button>\n  </div>\n  <p>{{ultraDataBefore}}</p>\n  <p>{{ultraDataAfter}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -157,7 +157,7 @@ var AppComponent = /** @class */ (function () {
                     device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
                         _this.service = service;
                         _this.liffGetUserService(service);
-                        _this.liffGetUltraDataService(service);
+                        // this.liffGetUltraDataService(service);
                     });
                     device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
                         _this.liffGetPSDIService(service);
@@ -177,7 +177,8 @@ var AppComponent = /** @class */ (function () {
             var _this = this;
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
                 device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
-                    _this.liffGetUltraDataService(service);
+                    _this.liffGetUltraBeforeDataService(service);
+                    _this.liffGetUltraAfterDataService(service);
                 });
                 return [2 /*return*/];
             });
@@ -194,7 +195,7 @@ var AppComponent = /** @class */ (function () {
             });
         });
     };
-    AppComponent.prototype.liffGetUltraDataService = function (service) {
+    AppComponent.prototype.liffGetUltraBeforeDataService = function (service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
             var _this = this;
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
@@ -202,22 +203,37 @@ var AppComponent = /** @class */ (function () {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
-                    _this.ultraData = new Uint8Array(value.buffer);
-                    _this.ultraDataMessage = String.fromCharCode.apply(null, _this.ultraData);
-                    alert(_this.ultraData);
-                    liff.sendMessages([
-                        {
-                            type: 'text',
-                            text: _this.ultraDataMessage
-                        },
-                    ])
-                        .then(function () {
-                        alert('message send');
-                    })
-                        .catch(function (err) {
-                        alert('Message ERROR:' + err);
-                    });
-                }).catch(function (error) { return alert('liffGetUltraDataService ERROR: ' + error); });
+                    _this.ultraDataBefore = new Uint8Array(value.buffer);
+                    // this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
+                    alert(_this.ultraDataBefore);
+                    // liff.sendMessages([
+                    //   {
+                    //     type: 'text',
+                    //     text: this.ultraDataMessage
+                    //   },
+                    // ])
+                    // .then(() => {
+                    //   alert('message send');
+                    // })
+                    // .catch((err) => {
+                    //   alert('Message ERROR:' + err);
+                    // });
+                }).catch(function (error) { return alert('Before Data ERROR: ' + error); });
+                return [2 /*return*/];
+            });
+        });
+    };
+    AppComponent.prototype.liffGetUltraAfterDataService = function (service) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(function (characteristic) {
+                    return characteristic.readValue();
+                })
+                    .then(function (value) {
+                    _this.ultraDataAfter = new Uint8Array(value.buffer);
+                    alert(_this.ultraDataAfter);
+                }).catch(function (error) { return alert('After Data ERROR: ' + error); });
                 return [2 /*return*/];
             });
         });
@@ -251,32 +267,9 @@ var AppComponent = /** @class */ (function () {
             });
         });
     };
-    AppComponent.prototype.liffGetUltraDataCharacteristic = function (characteristic) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                characteristic.startNotifications().then(function () {
-                    characteristic.addEventListener('characteristicvaluechanged', function (e) {
-                        var val = new Uint8Array(e.target.value.buffer)[0];
-                        alert("UltraData: " + val);
-                    });
-                })
-                    .catch(function (error) {
-                    alert('liffGetUltraDataCharacteristic ERROR: ' + error);
-                });
-                return [2 /*return*/];
-            });
-        });
-    };
-    AppComponent.prototype.liffToggleDeviceLedState = function (state) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
-            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                alert('state : ' + state);
-                return [2 /*return*/];
-            });
-        });
-    };
     AppComponent.prototype.test = function () {
-        this.liffGetUltraDataService(this.service);
+        this.liffGetUltraBeforeDataService(this.service);
+        this.liffGetUltraAfterDataService(this.service);
     };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({

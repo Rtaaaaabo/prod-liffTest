@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">SEND Messages</button>\n  </div>\n</div>\n\n<router-outlet></router-outlet>\n"
+module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">SEND Messages</button>\n  </div>\n  <p>{{ultraDataBefore}}</p>\n  <p>{{ultraDataAfter}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -138,7 +138,7 @@ let AppComponent = class AppComponent {
                 device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
                     this.service = service;
                     this.liffGetUserService(service);
-                    this.liffGetUltraDataService(service);
+                    // this.liffGetUltraDataService(service);
                 });
                 device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
                     this.liffGetPSDIService(service);
@@ -154,7 +154,8 @@ let AppComponent = class AppComponent {
     getUltraDataService(device) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
             device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
-                this.liffGetUltraDataService(service);
+                this.liffGetUltraBeforeDataService(service);
+                this.liffGetUltraAfterDataService(service);
             });
         });
     }
@@ -165,28 +166,39 @@ let AppComponent = class AppComponent {
             });
         });
     }
-    liffGetUltraDataService(service) {
+    liffGetUltraBeforeDataService(service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
             service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(characteristic => {
                 return characteristic.readValue();
             })
                 .then(value => {
-                this.ultraData = new Uint8Array(value.buffer);
-                this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
-                alert(this.ultraData);
-                liff.sendMessages([
-                    {
-                        type: 'text',
-                        text: this.ultraDataMessage
-                    },
-                ])
-                    .then(() => {
-                    alert('message send');
-                })
-                    .catch((err) => {
-                    alert('Message ERROR:' + err);
-                });
-            }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
+                this.ultraDataBefore = new Uint8Array(value.buffer);
+                // this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
+                alert(this.ultraDataBefore);
+                // liff.sendMessages([
+                //   {
+                //     type: 'text',
+                //     text: this.ultraDataMessage
+                //   },
+                // ])
+                // .then(() => {
+                //   alert('message send');
+                // })
+                // .catch((err) => {
+                //   alert('Message ERROR:' + err);
+                // });
+            }).catch(error => alert('Before Data ERROR: ' + error));
+        });
+    }
+    liffGetUltraAfterDataService(service) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(characteristic => {
+                return characteristic.readValue();
+            })
+                .then(value => {
+                this.ultraDataAfter = new Uint8Array(value.buffer);
+                alert(this.ultraDataAfter);
+            }).catch(error => alert('After Data ERROR: ' + error));
         });
     }
     liffGetPSDIService(service) {
@@ -212,26 +224,9 @@ let AppComponent = class AppComponent {
             });
         });
     }
-    liffGetUltraDataCharacteristic(characteristic) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            characteristic.startNotifications().then(() => {
-                characteristic.addEventListener('characteristicvaluechanged', e => {
-                    const val = new Uint8Array(e.target.value.buffer)[0];
-                    alert(`UltraData: ${val}`);
-                });
-            })
-                .catch(error => {
-                alert('liffGetUltraDataCharacteristic ERROR: ' + error);
-            });
-        });
-    }
-    liffToggleDeviceLedState(state) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            alert('state : ' + state);
-        });
-    }
     test() {
-        this.liffGetUltraDataService(this.service);
+        this.liffGetUltraBeforeDataService(this.service);
+        this.liffGetUltraAfterDataService(this.service);
     }
 };
 AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
