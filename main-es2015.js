@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">SEND Messages</button>\n  </div>\n  <p>Before Data0 {{ultraDataBefore}}</p>\n  <br>\n  <br>\n  <p>After Data1 {{ultraDataAfter}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
+module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">Before / After</button>\n  </div>\n  <p>Before Data0 {{ultraDataBefore}}</p>\n  <br>\n  <br>\n  <p>After Data1 {{ultraDataAfter}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -175,18 +175,6 @@ let AppComponent = class AppComponent {
                 this.ultraDataBefore = new Uint8Array(value.buffer);
                 // this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
                 alert(this.ultraDataBefore);
-                // liff.sendMessages([
-                //   {
-                //     type: 'text',
-                //     text: this.ultraDataMessage
-                //   },
-                // ])
-                // .then(() => {
-                //   alert('message send');
-                // })
-                // .catch((err) => {
-                //   alert('Message ERROR:' + err);
-                // });
             }).catch(error => alert('Before Data ERROR: ' + error));
         });
     }
