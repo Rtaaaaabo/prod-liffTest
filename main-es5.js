@@ -209,10 +209,10 @@ var AppComponent = /** @class */ (function () {
                         },
                     ])
                         .then(function () {
-                        console.log('message send');
+                        alert('message send');
                     })
                         .catch(function (err) {
-                        console.log('error:', err);
+                        alert('Message ERROR:' + err);
                     });
                 }).catch(function (error) { return alert('liffGetUltraDataService ERROR: ' + error); });
                 return [2 /*return*/];
@@ -274,18 +274,6 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.test = function () {
         this.liffGetUltraDataService(this.service);
-        liff.sendMessages([
-            {
-                type: 'text',
-                text: 'DFREE TESTメッセージです！'
-            },
-        ])
-            .then(function () {
-            console.log('message send');
-        })
-            .catch(function (err) {
-            console.log('error:', err);
-        });
     };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({

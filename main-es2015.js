@@ -178,10 +178,10 @@ let AppComponent = class AppComponent {
                     },
                 ])
                     .then(() => {
-                    console.log('message send');
+                    alert('message send');
                 })
                     .catch((err) => {
-                    console.log('error:', err);
+                    alert('Message ERROR:' + err);
                 });
             }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
         });
@@ -229,18 +229,6 @@ let AppComponent = class AppComponent {
     }
     test() {
         this.liffGetUltraDataService(this.service);
-        liff.sendMessages([
-            {
-                type: 'text',
-                text: 'DFREE TESTメッセージです！'
-            },
-        ])
-            .then(() => {
-            console.log('message send');
-        })
-            .catch((err) => {
-            console.log('error:', err);
-        });
     }
 };
 AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
