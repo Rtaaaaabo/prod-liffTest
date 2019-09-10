@@ -219,8 +219,15 @@ var AppComponent = /** @class */ (function () {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
+                    var toEndianness = value.getUint16(0, true);
+                    alert('toEndianness' + toEndianness);
+                    // for (let n = 0; n < 128; n++) {
+                    //   if (n % 10 === 0) {
+                    //     let exclusive = toEndianness ^ '0x04A3';
+                    //   }
+                    // }
                     _this.ultraDataAfter = new Uint8Array(value.buffer);
-                    alert(_this.ultraDataAfter);
+                    // alert(this.ultraDataAfter);
                 }).catch(function (error) { return alert('After Data ERROR: ' + error); });
                 return [2 /*return*/];
             });

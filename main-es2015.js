@@ -184,8 +184,15 @@ let AppComponent = class AppComponent {
                 return characteristic.readValue();
             })
                 .then(value => {
+                const toEndianness = value.getUint16(0, true);
+                alert('toEndianness' + toEndianness);
+                // for (let n = 0; n < 128; n++) {
+                //   if (n % 10 === 0) {
+                //     let exclusive = toEndianness ^ '0x04A3';
+                //   }
+                // }
                 this.ultraDataAfter = new Uint8Array(value.buffer);
-                alert(this.ultraDataAfter);
+                // alert(this.ultraDataAfter);
             }).catch(error => alert('After Data ERROR: ' + error));
         });
     }
