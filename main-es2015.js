@@ -92,7 +92,8 @@ __webpack_require__.r(__webpack_exports__);
 const SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
 const LED_CHARACTERISTIC_UUID = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
 const BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
-const ULTRA_CHARACTERISTIC_UUID = '6DB3E8CD-E398-4B9F-8FC2-5CAA140A87C2';
+const ULTRA_BEFORE_CHARACTERISTIC_UUID = 'C7D372AE-F856-46e0-A21B-AB41F3434656';
+const ULTRA_AFTER_CHARACTERISTIC_UUID = '6DB3E8CD-E398-4B9F-8FC2-5CAA140A87C2';
 // PSDI Service UUID: Fixed value for Developer Trial
 const PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
 const PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
@@ -166,7 +167,7 @@ let AppComponent = class AppComponent {
     }
     liffGetUltraDataService(service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(characteristic => {
+            service.getCharacteristic(ULTRA_AFTER_CHARACTERISTIC_UUID).then(characteristic => {
                 return characteristic.readValue();
             })
                 .then(value => {
