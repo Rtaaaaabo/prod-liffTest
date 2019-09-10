@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar>Line Things APP</mat-toolbar>\n<div class=\"container\">\n    <div class=\"text-center\">\n      <p>\n        <span *ngIf=\"statusBle\">接続しました</span>\n      </p>\n      <br>\n      <div *ngIf=\"statusBle\" class=\"d-flex\">\n        つながっているよ！\n      </div>\n      <div *ngIf=\"!statusBle\" class=\"d-flex\">\n        調子が悪い時は再起動してみてね！\n       </div>\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
+module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">Click me!</button>\n  </div>\n</div>\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -113,83 +113,121 @@ let AppComponent = class AppComponent {
         });
     }
     liffCheckAvailablityAndDo(callbackIfAvailable) {
-        liff.bluetooth.getAvailability().then(isAvailable => {
-            if (isAvailable) {
-                callbackIfAvailable();
-            }
-            else {
-                setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
-            }
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            liff.bluetooth.getAvailability().then(isAvailable => {
+                if (isAvailable) {
+                    callbackIfAvailable();
+                }
+                else {
+                    setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
+                }
+            });
         });
     }
     liffRequestDevice() {
-        liff.bluetooth.requestDevice().then(device => {
-            this.liffConnectToDevice(device);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            liff.bluetooth.requestDevice().then(device => {
+                this.liffConnectToDevice(device);
+            });
         });
     }
     liffConnectToDevice(device) {
-        device.gatt.connect().then(() => {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            device.gatt.connect().then(() => {
+                device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
+                    this.liffGetUserService(service);
+                    this.liffGetUltraDataService(service);
+                });
+                device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
+                    this.liffGetPSDIService(service);
+                });
+            });
+            const disconnectCallback = () => {
+                device.removeEventListener('gattserverdisconnected', disconnectCallback);
+                this.initLineLiff();
+            };
+            device.addEventListener('gattserverdisconnected', disconnectCallback);
+        });
+    }
+    getUltraDataService(device) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
             device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
-                this.liffGetUserService(service);
                 this.liffGetUltraDataService(service);
             });
-            device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
-                this.liffGetPSDIService(service);
-            });
         });
-        const disconnectCallback = () => {
-            device.removeEventListener('gattserverdisconnected', disconnectCallback);
-            this.initLineLiff();
-        };
-        device.addEventListener('gattserverdisconnected', disconnectCallback);
     }
     liffGetUserService(service) {
-        service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
-            this.liffGetButtonStateCharacteristic(characteristic);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
+                this.liffGetButtonStateCharacteristic(characteristic);
+            });
         });
     }
     liffGetUltraDataService(service) {
-        service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(characteristic => {
-            return characteristic.readValue();
-            // this.liffGetUltraDataCharacteristic(characteristic);
-        })
-            .then(value => {
-            const ultraData = new Uint8Array(value.buffer);
-            alert('UltraData: ' + ultraData);
-        }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(characteristic => {
+                return characteristic.readValue();
+            })
+                .then(value => {
+                const ultraData = new Uint8Array(value.buffer);
+                alert('UltraData: ' + ultraData);
+            }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
+        });
     }
     liffGetPSDIService(service) {
-        service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(characteristic => {
-            return characteristic.readValue();
-        })
-            .then(value => {
-            const psdi = new Uint8Array(value.buffer);
-        }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(characteristic => {
+                return characteristic.readValue();
+            })
+                .then(value => {
+                const psdi = new Uint8Array(value.buffer);
+            }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
+        });
     }
     liffGetButtonStateCharacteristic(characteristic) {
-        characteristic.startNotifications().then(() => {
-            characteristic.addEventListener('characteristicvaluechanged', e => {
-                const val = new Uint8Array(e.target.value.buffer)[0];
-                alert(`Button Val: ${val}`);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            characteristic.startNotifications().then(() => {
+                characteristic.addEventListener('characteristicvaluechanged', e => {
+                    const val = new Uint8Array(e.target.value.buffer)[0];
+                    alert(`Button Val: ${val}`);
+                });
+            })
+                .catch(error => {
+                // uiStatusError(makeErrorMsg(error), false);
             });
-        })
-            .catch(error => {
-            // uiStatusError(makeErrorMsg(error), false);
         });
     }
     liffGetUltraDataCharacteristic(characteristic) {
-        characteristic.startNotifications().then(() => {
-            characteristic.addEventListener('characteristicvaluechanged', e => {
-                const val = new Uint8Array(e.target.value.buffer)[0];
-                alert(`UltraData: ${val}`);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            characteristic.startNotifications().then(() => {
+                characteristic.addEventListener('characteristicvaluechanged', e => {
+                    const val = new Uint8Array(e.target.value.buffer)[0];
+                    alert(`UltraData: ${val}`);
+                });
+            })
+                .catch(error => {
+                alert('liffGetUltraDataCharacteristic ERROR: ' + error);
             });
-        })
-            .catch(error => {
-            alert('liffGetUltraDataCharacteristic ERROR: ' + error);
         });
     }
     liffToggleDeviceLedState(state) {
-        alert('state : ' + state);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            alert('state : ' + state);
+        });
+    }
+    test() {
+        liff.sendMessage([
+            {
+                type: 'text',
+                text: 'DFREE TESTメッセージです！'
+            }
+        ])
+            .then(() => {
+            console.log('message send');
+        })
+            .catch((err) => {
+            console.log('error:', err);
+        });
     }
 };
 AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([

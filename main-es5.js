@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar>Line Things APP</mat-toolbar>\n<div class=\"container\">\n    <div class=\"text-center\">\n      <p>\n        <span *ngIf=\"statusBle\">接続しました</span>\n      </p>\n      <br>\n      <div *ngIf=\"statusBle\" class=\"d-flex\">\n        つながっているよ！\n      </div>\n      <div *ngIf=\"!statusBle\" class=\"d-flex\">\n        調子が悪い時は再起動してみてね！\n       </div>\n    </div>\n  </div>\n\n<router-outlet></router-outlet>"
+module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">Click me!</button>\n  </div>\n</div>\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -121,87 +121,157 @@ var AppComponent = /** @class */ (function () {
         });
     };
     AppComponent.prototype.liffCheckAvailablityAndDo = function (callbackIfAvailable) {
-        var _this = this;
-        liff.bluetooth.getAvailability().then(function (isAvailable) {
-            if (isAvailable) {
-                callbackIfAvailable();
-            }
-            else {
-                setTimeout(function () { return _this.liffCheckAvailablityAndDo(callbackIfAvailable); }, 10000);
-            }
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                liff.bluetooth.getAvailability().then(function (isAvailable) {
+                    if (isAvailable) {
+                        callbackIfAvailable();
+                    }
+                    else {
+                        setTimeout(function () { return _this.liffCheckAvailablityAndDo(callbackIfAvailable); }, 10000);
+                    }
+                });
+                return [2 /*return*/];
+            });
         });
     };
     AppComponent.prototype.liffRequestDevice = function () {
-        var _this = this;
-        liff.bluetooth.requestDevice().then(function (device) {
-            _this.liffConnectToDevice(device);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                liff.bluetooth.requestDevice().then(function (device) {
+                    _this.liffConnectToDevice(device);
+                });
+                return [2 /*return*/];
+            });
         });
     };
     AppComponent.prototype.liffConnectToDevice = function (device) {
-        var _this = this;
-        device.gatt.connect().then(function () {
-            device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
-                _this.liffGetUserService(service);
-                _this.liffGetUltraDataService(service);
-            });
-            device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
-                _this.liffGetPSDIService(service);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var disconnectCallback;
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                device.gatt.connect().then(function () {
+                    device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
+                        _this.liffGetUserService(service);
+                        _this.liffGetUltraDataService(service);
+                    });
+                    device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(function (service) {
+                        _this.liffGetPSDIService(service);
+                    });
+                });
+                disconnectCallback = function () {
+                    device.removeEventListener('gattserverdisconnected', disconnectCallback);
+                    _this.initLineLiff();
+                };
+                device.addEventListener('gattserverdisconnected', disconnectCallback);
+                return [2 /*return*/];
             });
         });
-        var disconnectCallback = function () {
-            device.removeEventListener('gattserverdisconnected', disconnectCallback);
-            _this.initLineLiff();
-        };
-        device.addEventListener('gattserverdisconnected', disconnectCallback);
+    };
+    AppComponent.prototype.getUltraDataService = function (device) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
+                    _this.liffGetUltraDataService(service);
+                });
+                return [2 /*return*/];
+            });
+        });
     };
     AppComponent.prototype.liffGetUserService = function (service) {
-        var _this = this;
-        service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(function (characteristic) {
-            _this.liffGetButtonStateCharacteristic(characteristic);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(function (characteristic) {
+                    _this.liffGetButtonStateCharacteristic(characteristic);
+                });
+                return [2 /*return*/];
+            });
         });
     };
     AppComponent.prototype.liffGetUltraDataService = function (service) {
-        service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(function (characteristic) {
-            return characteristic.readValue();
-            // this.liffGetUltraDataCharacteristic(characteristic);
-        })
-            .then(function (value) {
-            var ultraData = new Uint8Array(value.buffer);
-            alert('UltraData: ' + ultraData);
-        }).catch(function (error) { return alert('liffGetUltraDataService ERROR: ' + error); });
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(function (characteristic) {
+                    return characteristic.readValue();
+                })
+                    .then(function (value) {
+                    var ultraData = new Uint8Array(value.buffer);
+                    alert('UltraData: ' + ultraData);
+                }).catch(function (error) { return alert('liffGetUltraDataService ERROR: ' + error); });
+                return [2 /*return*/];
+            });
+        });
     };
     AppComponent.prototype.liffGetPSDIService = function (service) {
-        service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {
-            return characteristic.readValue();
-        })
-            .then(function (value) {
-            var psdi = new Uint8Array(value.buffer);
-        }).catch(function (error) { return alert('liffGetPSDIService ERROR: ' + error); });
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {
+                    return characteristic.readValue();
+                })
+                    .then(function (value) {
+                    var psdi = new Uint8Array(value.buffer);
+                }).catch(function (error) { return alert('liffGetPSDIService ERROR: ' + error); });
+                return [2 /*return*/];
+            });
+        });
     };
     AppComponent.prototype.liffGetButtonStateCharacteristic = function (characteristic) {
-        characteristic.startNotifications().then(function () {
-            characteristic.addEventListener('characteristicvaluechanged', function (e) {
-                var val = new Uint8Array(e.target.value.buffer)[0];
-                alert("Button Val: " + val);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                characteristic.startNotifications().then(function () {
+                    characteristic.addEventListener('characteristicvaluechanged', function (e) {
+                        var val = new Uint8Array(e.target.value.buffer)[0];
+                        alert("Button Val: " + val);
+                    });
+                })
+                    .catch(function (error) {
+                    // uiStatusError(makeErrorMsg(error), false);
+                });
+                return [2 /*return*/];
             });
-        })
-            .catch(function (error) {
-            // uiStatusError(makeErrorMsg(error), false);
         });
     };
     AppComponent.prototype.liffGetUltraDataCharacteristic = function (characteristic) {
-        characteristic.startNotifications().then(function () {
-            characteristic.addEventListener('characteristicvaluechanged', function (e) {
-                var val = new Uint8Array(e.target.value.buffer)[0];
-                alert("UltraData: " + val);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                characteristic.startNotifications().then(function () {
+                    characteristic.addEventListener('characteristicvaluechanged', function (e) {
+                        var val = new Uint8Array(e.target.value.buffer)[0];
+                        alert("UltraData: " + val);
+                    });
+                })
+                    .catch(function (error) {
+                    alert('liffGetUltraDataCharacteristic ERROR: ' + error);
+                });
+                return [2 /*return*/];
             });
-        })
-            .catch(function (error) {
-            alert('liffGetUltraDataCharacteristic ERROR: ' + error);
         });
     };
     AppComponent.prototype.liffToggleDeviceLedState = function (state) {
-        alert('state : ' + state);
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                alert('state : ' + state);
+                return [2 /*return*/];
+            });
+        });
+    };
+    AppComponent.prototype.test = function () {
+        liff.sendMessage([
+            {
+                type: 'text',
+                text: 'DFREE TESTメッセージです！'
+            }
+        ])
+            .then(function () {
+            console.log('message send');
+        })
+            .catch(function (err) {
+            console.log('error:', err);
+        });
     };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
