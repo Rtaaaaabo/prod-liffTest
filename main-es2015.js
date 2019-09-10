@@ -171,6 +171,7 @@ let AppComponent = class AppComponent {
             })
                 .then(value => {
                 this.ultraData = new Uint8Array(value.buffer);
+                alert(this.ultraData);
                 liff.sendMessages([
                     {
                         type: 'text',

@@ -202,6 +202,7 @@ var AppComponent = /** @class */ (function () {
                 })
                     .then(function (value) {
                     _this.ultraData = new Uint8Array(value.buffer);
+                    alert(_this.ultraData);
                     liff.sendMessages([
                         {
                             type: 'text',
