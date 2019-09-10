@@ -135,6 +135,7 @@ let AppComponent = class AppComponent {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
             device.gatt.connect().then(() => {
                 device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
+                    this.service = service;
                     this.liffGetUserService(service);
                     this.liffGetUltraDataService(service);
                 });
@@ -169,8 +170,19 @@ let AppComponent = class AppComponent {
                 return characteristic.readValue();
             })
                 .then(value => {
-                const ultraData = new Uint8Array(value.buffer);
-                alert('UltraData: ' + ultraData);
+                this.ultraData = new Uint8Array(value.buffer);
+                liff.sendMessages([
+                    {
+                        type: 'text',
+                        text: this.ultraData
+                    },
+                ])
+                    .then(() => {
+                    console.log('message send');
+                })
+                    .catch((err) => {
+                    console.log('error:', err);
+                });
             }).catch(error => alert('liffGetUltraDataService ERROR: ' + error));
         });
     }
@@ -216,11 +228,12 @@ let AppComponent = class AppComponent {
         });
     }
     test() {
+        this.liffGetUltraDataService(this.service);
         liff.sendMessages([
             {
                 type: 'text',
                 text: 'DFREE TESTメッセージです！'
-            }
+            },
         ])
             .then(() => {
             console.log('message send');

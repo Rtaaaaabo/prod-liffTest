@@ -154,6 +154,7 @@ var AppComponent = /** @class */ (function () {
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
                 device.gatt.connect().then(function () {
                     device.gatt.getPrimaryService(SERVICE_UUID).then(function (service) {
+                        _this.service = service;
                         _this.liffGetUserService(service);
                         _this.liffGetUltraDataService(service);
                     });
@@ -194,13 +195,25 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.liffGetUltraDataService = function (service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            var _this = this;
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
                 service.getCharacteristic(ULTRA_CHARACTERISTIC_UUID).then(function (characteristic) {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
-                    var ultraData = new Uint8Array(value.buffer);
-                    alert('UltraData: ' + ultraData);
+                    _this.ultraData = new Uint8Array(value.buffer);
+                    liff.sendMessages([
+                        {
+                            type: 'text',
+                            text: _this.ultraData
+                        },
+                    ])
+                        .then(function () {
+                        console.log('message send');
+                    })
+                        .catch(function (err) {
+                        console.log('error:', err);
+                    });
                 }).catch(function (error) { return alert('liffGetUltraDataService ERROR: ' + error); });
                 return [2 /*return*/];
             });
@@ -260,11 +273,12 @@ var AppComponent = /** @class */ (function () {
         });
     };
     AppComponent.prototype.test = function () {
+        this.liffGetUltraDataService(this.service);
         liff.sendMessages([
             {
                 type: 'text',
                 text: 'DFREE TESTメッセージです！'
-            }
+            },
         ])
             .then(function () {
             console.log('message send');
