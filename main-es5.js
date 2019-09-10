@@ -218,20 +218,9 @@ var AppComponent = /** @class */ (function () {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
+                    // valueはDataView型
                     _this.ultraDataAfter = value.getUint8(6, true);
-                    alert(_this.ultraDataAfter);
-                    alert(value.getUint8(10, true));
-                    // let toEndianness = '';
-                    // for (let n = 0; n < 128; n++) {
-                    //   toEndianness = value.getUint16(n, true);
-                    //   alert('toEndianness: ' + toEndianness);
-                    // }
-                    // const toEndianness = value.getUint16(0, true);
-                    // for (let n = 0; n < 128; n++) {
-                    //   if (n % 10 === 0) {
-                    //     let exclusive = toEndianness ^ '0x04A3';
-                    //   }
-                    // }
+                    alert(value.byteOffset + ' : ' + value.byteLength);
                     _this.ultraDataAfter = new Uint8Array(value.buffer);
                     // alert(this.ultraDataAfter);
                 }).catch(function (error) { return alert('After Data ERROR: ' + error); });
