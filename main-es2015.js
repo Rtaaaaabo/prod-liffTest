@@ -174,7 +174,6 @@ let AppComponent = class AppComponent {
                 .then(value => {
                 this.ultraDataBefore = new Uint8Array(value.buffer);
                 // this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
-                alert(this.ultraDataBefore);
             }).catch(error => alert('Before Data ERROR: ' + error));
         });
     }
@@ -186,6 +185,7 @@ let AppComponent = class AppComponent {
                 .then(value => {
                 this.ultraDataAfter = value.getUint8(6, true);
                 alert(this.ultraDataAfter);
+                alert(value.getUint8(10, true));
                 // let toEndianness = '';
                 // for (let n = 0; n < 128; n++) {
                 //   toEndianness = value.getUint16(n, true);

@@ -205,7 +205,6 @@ var AppComponent = /** @class */ (function () {
                     .then(function (value) {
                     _this.ultraDataBefore = new Uint8Array(value.buffer);
                     // this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
-                    alert(_this.ultraDataBefore);
                 }).catch(function (error) { return alert('Before Data ERROR: ' + error); });
                 return [2 /*return*/];
             });
@@ -221,6 +220,7 @@ var AppComponent = /** @class */ (function () {
                     .then(function (value) {
                     _this.ultraDataAfter = value.getUint8(6, true);
                     alert(_this.ultraDataAfter);
+                    alert(value.getUint8(10, true));
                     // let toEndianness = '';
                     // for (let n = 0; n < 128; n++) {
                     //   toEndianness = value.getUint16(n, true);
