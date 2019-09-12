@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">Thanks Button</button>\n  </div>\n  <p>Before Data0 {{ultraDataBefore}}</p>\n  <br>\n  <br>\n  <p>After Data1 {{ultraDataAfter}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
+module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">Thanks Button</button>\n  </div>\n  <p>Before Data0 {{ultraDataBefore}}</p>\n  <br>\n  <br>\n  <p>After Data1 {{ultraDataAfter}}</p>\n</div>\n<br>\n<br>\n<div>\n  <p>Channel0 {{ultraChannel0Data}}</p>\n  <p>Channel1 {{ultraChannel1Data}}</p>\n  <p>Channel2 {{ultraChannel2Data}}</p>\n  <p>Channel3 {{ultraChannel3Data}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -87,19 +87,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+/* harmony import */ var _data_liffData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data/liffData */ "./src/app/data/liffData.ts");
 
 
-const SERVICE_UUID = 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31';
-const LED_CHARACTERISTIC_UUID = 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B';
-const BTN_CHARACTERISTIC_UUID = '62FBD229-6EDD-4D1A-B554-5C4E1BB29169';
-const ULTRA_BEFORE_CHARACTERISTIC_UUID = 'C7D372AE-F856-46e0-A21B-AB41F3434656';
-const ULTRA_AFTER_CHARACTERISTIC_UUID = 'F681F9EC-2C70-45d2-BE3A-FC54D033B50A';
-// PSDI Service UUID: Fixed value for Developer Trial
-const PSDI_SERVICE_UUID = 'E625601E-9E55-4597-A598-76018A0D293D';
-const PSDI_CHARACTERISTIC_UUID = '26E2B12B-85F0-4F3F-9FDD-91D114270E6E';
+// import { LiffService } from './services/liff.service';
+
+const SERVICE_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].USER_SERVICE_UUID;
+const BTN_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].BTN_CHARACTERISTIC_UUID;
+const ULTRA_BEFORE_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].ULTRA_BEFORE_CHARACTERISTIC_UUID;
+const ULTRA_AFTER_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].ULTRA_AFTER_CHARACTERISTIC_UUID;
+const PSDI_SERVICE_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].PSDI_SERVICE_UUID;
+const PSDI_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].PSDI_CHARACTERISTIC_UUID;
 let AppComponent = class AppComponent {
     constructor() {
         this.title = 'LIFF Mock';
+        // 一旦は記載するけど、あとできれいにする。
+        this.bufferBefore = new ArrayBuffer(512);
+        this.bufferAfter = new ArrayBuffer(512);
+        this.buffetKind = new ArrayBuffer(128);
+        this.bufferChannel0 = new ArrayBuffer(256);
+        this.bufferChannel1 = new ArrayBuffer(256);
+        this.bufferChannel2 = new ArrayBuffer(256);
+        this.bufferChannel3 = new ArrayBuffer(256);
+        this.dvChannel0 = new DataView(this.bufferChannel0);
+        this.dvChannel1 = new DataView(this.bufferChannel1);
+        this.dvChannel2 = new DataView(this.bufferChannel2);
+        this.dvChannel3 = new DataView(this.bufferChannel3);
+        this.dvBefore = new DataView(this.bufferBefore);
+        this.dvAfter = new DataView(this.bufferAfter);
+        this.dv0Before = new DataView(this.buffetKind);
+        this.dv1Before = new DataView(this.buffetKind);
+        this.dv2Before = new DataView(this.buffetKind);
+        this.dv3Before = new DataView(this.buffetKind);
+        this.dv0After = new DataView(this.buffetKind);
+        this.dv1After = new DataView(this.buffetKind);
+        this.dv2After = new DataView(this.buffetKind);
+        this.dv3After = new DataView(this.buffetKind);
         this.messages = '';
         this.statusBle = true;
     }
@@ -138,7 +161,6 @@ let AppComponent = class AppComponent {
                 device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
                     this.service = service;
                     this.liffGetUserService(service);
-                    // this.liffGetUltraDataService(service);
                 });
                 device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
                     this.liffGetPSDIService(service);
@@ -151,14 +173,6 @@ let AppComponent = class AppComponent {
             device.addEventListener('gattserverdisconnected', disconnectCallback);
         });
     }
-    getUltraDataService(device) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
-                this.liffGetUltraBeforeDataService(service);
-                this.liffGetUltraAfterDataService(service);
-            });
-        });
-    }
     liffGetUserService(service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
             service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
@@ -166,29 +180,44 @@ let AppComponent = class AppComponent {
             });
         });
     }
-    liffGetUltraBeforeDataService(service) {
+    liffGetUltraDataService(service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(characteristic => {
-                return characteristic.readValue();
+            service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(characteristicBefore => {
+                return characteristicBefore.readValue();
             })
-                .then(value => {
-                this.ultraDataBefore = new Uint8Array(value.buffer);
-                // this.ultraDataMessage = String.fromCharCode.apply(null, this.ultraData);
+                .then(dataViewBeforeValue => {
+                service.getCharacteristic(ULTRA_AFTER_CHARACTERISTIC_UUID).then(characteristicAfter => {
+                    return characteristicAfter.readValue();
+                })
+                    .then(dataViewAfterValue => {
+                    for (let i = 0; i < dataViewBeforeValue.byteLength; i = i + 2) {
+                        this.dvBefore.setUint16(i, dataViewBeforeValue.getUint16(i), true);
+                    }
+                    for (let i = 0; i < dataViewAfterValue.byteLength; i = i + 2) {
+                        this.dvAfter.setUint16(i, dataViewAfterValue.getUint16(i), true);
+                    }
+                    this.ultraDataBefore = new Uint16Array(this.dvBefore.buffer);
+                    this.ultraDataAfter = new Uint16Array(this.dvAfter.buffer);
+                    for (let data0 = 0; data0 < 128; data0 = data0 + 2) { // 126で終わる
+                        this.dvChannel0.setUint16(data0, this.dvBefore.getUint16(data0)); // offsetが0から126まで
+                        this.dvChannel1.setUint16(data0, this.dvBefore.getUint16(data0 + 128)); // offsetが128から254まで
+                        this.dvChannel2.setUint16(data0, this.dvBefore.getUint16(data0 + 256)); // offsetが256から382まで
+                        this.dvChannel3.setUint16(data0, this.dvBefore.getUint16(data0 + 384)); // offsetが384から510まで
+                    }
+                    for (let data1 = 0; data1 < 128; data1 = data1 + 2) {
+                        this.dvChannel0.setUint16(data1 + 128, this.dvBefore.getUint16(data1));
+                        this.dvChannel1.setUint16(data1 + 128, this.dvBefore.getUint16(data1 + 128));
+                        this.dvChannel2.setUint16(data1 + 128, this.dvBefore.getUint16(data1 + 256));
+                        this.dvChannel3.setUint16(data1 + 128, this.dvBefore.getUint16(data1 + 384));
+                    }
+                    // 人が確認出来るような形
+                    this.ultraChannel0Data = new Uint16Array(this.dvChannel0.buffer);
+                    this.ultraChannel1Data = new Uint16Array(this.dvChannel1.buffer);
+                    this.ultraChannel2Data = new Uint16Array(this.dvChannel2.buffer);
+                    this.ultraChannel3Data = new Uint16Array(this.dvChannel3.buffer);
+                    this.decryptionChannelData(this.dvChannel0, this.dvChannel1, this.dvChannel2, this.dvChannel3);
+                }).catch(err => alert('After Data ERROR: ' + err));
             }).catch(error => alert('Before Data ERROR: ' + error));
-        });
-    }
-    liffGetUltraAfterDataService(service) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            service.getCharacteristic(ULTRA_AFTER_CHARACTERISTIC_UUID).then(characteristic => {
-                return characteristic.readValue();
-            })
-                .then(value => {
-                // valueはDataView型
-                this.ultraDataAfter = value.getUint8(6, true);
-                alert(value.byteOffset + ' : ' + value.byteLength);
-                this.ultraDataAfter = new Uint8Array(value.buffer);
-                // alert(this.ultraDataAfter);
-            }).catch(error => alert('After Data ERROR: ' + error));
         });
     }
     liffGetPSDIService(service) {
@@ -200,6 +229,120 @@ let AppComponent = class AppComponent {
                 const psdi = new Uint8Array(value.buffer);
             }).catch(error => alert('liffGetPSDIService ERROR: ' + error));
         });
+    }
+    test() {
+        // this.liffGetUltraBeforeDataService(this.service);
+        this.liffGetUltraDataService(this.service);
+    }
+    // それぞの引数には128個の16進数のデータが入っている
+    decryptionChannelData(dvChannel0, dvChannel1, dvChannel2, dvChannel3) {
+        let channel0Data;
+        let channel1Data;
+        let channel2Data;
+        let channel3Data;
+        for (let n = 0; n < 256; n = n + 2) {
+            if ((n / 2) % 10 === 0) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 1) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 2) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 3) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 4) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 5) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 6) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 7) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 8) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+            if ((n / 2) % 10 === 9) {
+                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
+                this.dvChannel0.setUint16(n, channel0Data);
+                this.dvChannel1.setUint16(n, channel1Data);
+                this.dvChannel2.setUint16(n, channel2Data);
+                this.dvChannel3.setUint16(n, channel3Data);
+            }
+        }
+        alert(new Uint16Array(this.dvChannel1.buffer));
     }
     liffGetButtonStateCharacteristic(characteristic) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
@@ -213,10 +356,6 @@ let AppComponent = class AppComponent {
                 // uiStatusError(makeErrorMsg(error), false);
             });
         });
-    }
-    test() {
-        this.liffGetUltraBeforeDataService(this.service);
-        this.liffGetUltraAfterDataService(this.service);
     }
 };
 AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
@@ -276,6 +415,42 @@ AppModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
     })
 ], AppModule);
 
+
+
+/***/ }),
+
+/***/ "./src/app/data/liffData.ts":
+/*!**********************************!*\
+  !*** ./src/app/data/liffData.ts ***!
+  \**********************************/
+/*! exports provided: LiffData, keyHexadecimalNum */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LiffData", function() { return LiffData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "keyHexadecimalNum", function() { return keyHexadecimalNum; });
+const LiffData = {
+    USER_SERVICE_UUID: 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31',
+    LED_CHARACTERISTIC_UUIDL: 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B',
+    BTN_CHARACTERISTIC_UUID: '62FBD229-6EDD-4D1A-B554-5C4E1BB29169',
+    ULTRA_BEFORE_CHARACTERISTIC_UUID: 'C7D372AE-F856-46e0-A21B-AB41F3434656',
+    ULTRA_AFTER_CHARACTERISTIC_UUID: 'F681F9EC-2C70-45d2-BE3A-FC54D033B50A',
+    PSDI_SERVICE_UUID: 'E625601E-9E55-4597-A598-76018A0D293D',
+    PSDI_CHARACTERISTIC_UUID: '26E2B12B-85F0-4F3F-9FDD-91D114270E6E'
+};
+const keyHexadecimalNum = {
+    key1: 0x04A3,
+    key2: 0x0B3B,
+    key3: 0x0BBA,
+    key4: 0x0FBC,
+    key5: 0x09D2,
+    key6: 0x0FEE,
+    key7: 0x01B4,
+    key8: 0x0F67,
+    key9: 0x0A99,
+    key10: 0x0E51
+};
 
 
 /***/ }),
