@@ -381,8 +381,10 @@ var AppComponent = /** @class */ (function () {
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
                 characteristic.startNotifications().then(function () {
                     characteristic.addEventListener('characteristicvaluechanged', function (e) {
-                        var val = new Uint8Array(e.target.value.buffer)[0];
+                        var val = new Uint16Array(e.target.value.buffer)[0];
                         alert("Button Val: " + val);
+                        var target = new Uint16Array(e.target.value.buffer);
+                        alert(target);
                     });
                 })
                     .catch(function (error) {
@@ -471,7 +473,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "keyHexadecimalNum", function() { return keyHexadecimalNum; });
 var LiffData = {
     USER_SERVICE_UUID: 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31',
-    LED_CHARACTERISTIC_UUIDL: 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B',
+    LED_CHARACTERISTIC_UUID: 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B',
     BTN_CHARACTERISTIC_UUID: '62FBD229-6EDD-4D1A-B554-5C4E1BB29169',
     ULTRA_BEFORE_CHARACTERISTIC_UUID: 'C7D372AE-F856-46e0-A21B-AB41F3434656',
     ULTRA_AFTER_CHARACTERISTIC_UUID: 'F681F9EC-2C70-45d2-BE3A-FC54D033B50A',
