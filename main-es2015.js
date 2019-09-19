@@ -579,9 +579,9 @@ let AppComponent = class AppComponent {
                 .startNotifications()
                 .then(() => {
                 characteristic.addEventListener('characteristicvaluechanged', res => {
-                    const results = new Uint16Array(res.target.val.buffer);
-                    // const val = new Uint16Array(e.target.value.buffer)[0];
-                    alert(results);
+                    // const results = new Uint16Array(res.target.val.buffer);
+                    const val = new Uint16Array(res.target.value.buffer)[0];
+                    alert(val);
                 });
             })
                 .catch(error => {

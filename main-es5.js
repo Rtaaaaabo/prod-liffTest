@@ -617,9 +617,9 @@ var AppComponent = /** @class */ (function () {
                     .startNotifications()
                     .then(function () {
                     characteristic.addEventListener('characteristicvaluechanged', function (res) {
-                        var results = new Uint16Array(res.target.val.buffer);
-                        // const val = new Uint16Array(e.target.value.buffer)[0];
-                        alert(results);
+                        // const results = new Uint16Array(res.target.val.buffer);
+                        var val = new Uint16Array(res.target.value.buffer)[0];
+                        alert(val);
                     });
                 })
                     .catch(function (error) {
