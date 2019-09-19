@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">Thanks Button</button>\n  </div>\n  <p>Before Data0 {{ultraDataBefore}}</p>\n  <br>\n  <br>\n  <p>After Data1 {{ultraDataAfter}}</p>\n</div>\n<br>\n<br>\n<div>\n  <p>Channel0 {{ultraChannel0Data}}</p>\n  <p>Channel1 {{ultraChannel1Data}}</p>\n  <p>Channel2 {{ultraChannel2Data}}</p>\n  <p>Channel3 {{ultraChannel3Data}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
+module.exports = "<mat-toolbar color=\"primary\">DFree Line Things</mat-toolbar>\n<div class=\"container\">\n  <div class=\"text-center\">\n    <button (click)=\"test()\">Thanks Button</button>\n  </div>\n</div>\n<br>\n<br>\n<div>\n  <p>Data0: {{ultraData0}}</p>\n  <p>Data1: {{ultraData1}}</p>\n</div>\n\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -97,37 +97,44 @@ __webpack_require__.r(__webpack_exports__);
 
 var SERVICE_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].USER_SERVICE_UUID;
 var BTN_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].BTN_CHARACTERISTIC_UUID;
-var ULTRA_BEFORE_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].ULTRA_BEFORE_CHARACTERISTIC_UUID;
-var ULTRA_AFTER_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].ULTRA_AFTER_CHARACTERISTIC_UUID;
+var ULTRA_DATA0_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].ULTRA_DATA0_CHARACTERISTIC_UUID;
+var ULTRA_DATA1_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].ULTRA_DATA1_CHARACTERISTIC_UUID;
 var PSDI_SERVICE_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].PSDI_SERVICE_UUID;
 var PSDI_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].PSDI_CHARACTERISTIC_UUID;
 var AppComponent = /** @class */ (function () {
     function AppComponent() {
         this.title = 'LIFF Mock';
+        this.bufferData0 = new ArrayBuffer(512);
+        this.bufferData1 = new ArrayBuffer(512);
+        this.dvData0 = new DataView(this.bufferData0);
+        this.dvData1 = new DataView(this.bufferData1);
         // 一旦は記載するけど、あとできれいにする。
-        this.bufferBefore = new ArrayBuffer(512);
-        this.bufferAfter = new ArrayBuffer(512);
-        this.buffetKind = new ArrayBuffer(128);
-        this.bufferChannel0 = new ArrayBuffer(256);
-        this.bufferChannel1 = new ArrayBuffer(256);
-        this.bufferChannel2 = new ArrayBuffer(256);
-        this.bufferChannel3 = new ArrayBuffer(256);
-        this.dvChannel0 = new DataView(this.bufferChannel0);
-        this.dvChannel1 = new DataView(this.bufferChannel1);
-        this.dvChannel2 = new DataView(this.bufferChannel2);
-        this.dvChannel3 = new DataView(this.bufferChannel3);
-        this.dvBefore = new DataView(this.bufferBefore);
-        this.dvAfter = new DataView(this.bufferAfter);
-        this.dv0Before = new DataView(this.buffetKind);
-        this.dv1Before = new DataView(this.buffetKind);
-        this.dv2Before = new DataView(this.buffetKind);
-        this.dv3Before = new DataView(this.buffetKind);
-        this.dv0After = new DataView(this.buffetKind);
-        this.dv1After = new DataView(this.buffetKind);
-        this.dv2After = new DataView(this.buffetKind);
-        this.dv3After = new DataView(this.buffetKind);
+        this.bufferRawChannel1 = new ArrayBuffer(256);
+        this.bufferRawChannel2 = new ArrayBuffer(256);
+        this.bufferRawChannel3 = new ArrayBuffer(256);
+        this.bufferRawChannel4 = new ArrayBuffer(256);
+        this.dvRawChannel1 = new DataView(this.bufferRawChannel1);
+        this.dvRawChannel2 = new DataView(this.bufferRawChannel2);
+        this.dvRawChannel3 = new DataView(this.bufferRawChannel3);
+        this.dvRawChannel4 = new DataView(this.bufferRawChannel4);
         this.messages = '';
         this.statusBle = true;
+        this.ch1AntePosition = 0;
+        this.ch1PostePosition = 0;
+        this.ch2AntePosition = 0;
+        this.ch2PostePosition = 0;
+        this.ch3AntePosition = 0;
+        this.ch3PostePosition = 0;
+        this.ch4AntePosition = 0;
+        this.ch4PostePosition = 0;
+        this.ch1Under20FrontPosition = 0;
+        this.ch1Under20BackPosition = 0;
+        this.ch2Under20FrontPosition = 0;
+        this.ch2Under20BackPosition = 0;
+        this.ch3Under20FrontPosition = 0;
+        this.ch3Under20BackPosition = 0;
+        this.ch4Under20FrontPosition = 0;
+        this.ch4Under20BackPosition = 0;
     }
     AppComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -209,182 +216,410 @@ var AppComponent = /** @class */ (function () {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
             var _this = this;
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                service.getCharacteristic(ULTRA_BEFORE_CHARACTERISTIC_UUID).then(function (characteristicBefore) {
-                    return characteristicBefore.readValue();
-                })
-                    .then(function (dataViewBeforeValue) {
-                    service.getCharacteristic(ULTRA_AFTER_CHARACTERISTIC_UUID).then(function (characteristicAfter) {
-                        return characteristicAfter.readValue();
-                    })
-                        .then(function (dataViewAfterValue) {
-                        for (var i = 0; i < dataViewBeforeValue.byteLength; i = i + 2) {
-                            _this.dvBefore.setUint16(i, dataViewBeforeValue.getUint16(i), true);
-                        }
-                        for (var i = 0; i < dataViewAfterValue.byteLength; i = i + 2) {
-                            _this.dvAfter.setUint16(i, dataViewAfterValue.getUint16(i), true);
-                        }
-                        _this.ultraDataBefore = new Uint16Array(_this.dvBefore.buffer);
-                        _this.ultraDataAfter = new Uint16Array(_this.dvAfter.buffer);
-                        for (var data0 = 0; data0 < 128; data0 = data0 + 2) { // 126で終わる
-                            _this.dvChannel0.setUint16(data0, _this.dvBefore.getUint16(data0)); // offsetが0から126まで
-                            _this.dvChannel1.setUint16(data0, _this.dvBefore.getUint16(data0 + 128)); // offsetが128から254まで
-                            _this.dvChannel2.setUint16(data0, _this.dvBefore.getUint16(data0 + 256)); // offsetが256から382まで
-                            _this.dvChannel3.setUint16(data0, _this.dvBefore.getUint16(data0 + 384)); // offsetが384から510まで
-                        }
-                        for (var data1 = 0; data1 < 128; data1 = data1 + 2) {
-                            _this.dvChannel0.setUint16(data1 + 128, _this.dvBefore.getUint16(data1));
-                            _this.dvChannel1.setUint16(data1 + 128, _this.dvBefore.getUint16(data1 + 128));
-                            _this.dvChannel2.setUint16(data1 + 128, _this.dvBefore.getUint16(data1 + 256));
-                            _this.dvChannel3.setUint16(data1 + 128, _this.dvBefore.getUint16(data1 + 384));
-                        }
-                        // 人が確認出来るような形
-                        _this.ultraChannel0Data = new Uint16Array(_this.dvChannel0.buffer);
-                        _this.ultraChannel1Data = new Uint16Array(_this.dvChannel1.buffer);
-                        _this.ultraChannel2Data = new Uint16Array(_this.dvChannel2.buffer);
-                        _this.ultraChannel3Data = new Uint16Array(_this.dvChannel3.buffer);
-                        _this.decryptionChannelData(_this.dvChannel0, _this.dvChannel1, _this.dvChannel2, _this.dvChannel3);
-                    }).catch(function (err) { return alert('After Data ERROR: ' + err); });
-                }).catch(function (error) { return alert('Before Data ERROR: ' + error); });
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        this.ch1IsUrine = false;
+                        this.ch2IsUrine = false;
+                        this.ch3IsUrine = false;
+                        this.ch4IsUrine = false;
+                        return [4 /*yield*/, service
+                                .getCharacteristic(ULTRA_DATA0_CHARACTERISTIC_UUID)
+                                .then(function (characteristicData0) {
+                                return characteristicData0.readValue();
+                            })
+                                .then(function (dataView0Value) {
+                                service
+                                    .getCharacteristic(ULTRA_DATA1_CHARACTERISTIC_UUID)
+                                    .then(function (characteristicData1) {
+                                    return characteristicData1.readValue();
+                                })
+                                    .then(function (characteristicData1) {
+                                    for (var i = 0; i < dataView0Value.byteLength; i = i + 2) {
+                                        _this.dvData0.setUint16(i, dataView0Value.getUint16(i));
+                                    }
+                                    for (var i = 0; i < characteristicData1.byteLength; i = i + 2) {
+                                        _this.dvData1.setUint16(i, characteristicData1.getUint16(i));
+                                    }
+                                    _this.splitForChannel(_this.dvData0, _this.dvData1);
+                                    _this.ultraData0 = new Uint16Array(_this.dvData0.buffer);
+                                    _this.ultraData1 = new Uint16Array(_this.dvData1.buffer);
+                                })
+                                    .catch(function (error) { return alert('Data0 ERROR: ' + error); });
+                            })
+                                .catch(function (error) { return alert('Data1 ERROR: ' + error); })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
             });
         });
+    };
+    AppComponent.prototype.splitForChannel = function (dvData0, dvData1) {
+        for (var i = 0; i < dvData0.byteLength; i = i + 2) {
+            if (i < 256) {
+                this.dvRawChannel1.setUint16(i, dvData0.getUint16(i, true));
+            }
+            else if (i < 512) {
+                this.dvRawChannel2.setUint16(i - 256, dvData0.getUint16(i, true));
+            }
+        }
+        for (var i = 0; i < dvData1.byteLength; i = i + 2) {
+            if (i < 256) {
+                this.dvRawChannel3.setUint16(i, dvData1.getUint16(i, true));
+            }
+            else if (i < 512) {
+                this.dvRawChannel4.setUint16(i - 256, dvData1.getUint16(i, true));
+            }
+        }
+        this.culcDiscardUnder100(this.dvRawChannel1, this.dvRawChannel2, this.dvRawChannel3, this.dvRawChannel4);
+    };
+    AppComponent.prototype.culcDiscardUnder100 = function (dvRawChannel1, dvRawChannel2, dvRawChannel3, dvRawChannel4) {
+        var bufferChannel1DiscardUnder100 = new ArrayBuffer(256);
+        var dvChannel1DiscardUnder100 = new DataView(bufferChannel1DiscardUnder100);
+        var bufferChannel2DiscardUnder100 = new ArrayBuffer(256);
+        var dvChannel2DiscardUnder100 = new DataView(bufferChannel2DiscardUnder100);
+        var bufferChannel3DiscardUnder100 = new ArrayBuffer(256);
+        var dvChannel3DiscardUnder100 = new DataView(bufferChannel3DiscardUnder100);
+        var bufferChannel4DiscardUnder100 = new ArrayBuffer(256);
+        var dvChannel4DiscardUnder100 = new DataView(bufferChannel4DiscardUnder100);
+        for (var ch1Posi = 0; ch1Posi < dvRawChannel1.byteLength; ch1Posi = ch1Posi + 2) {
+            if (dvRawChannel1.getUint16(ch1Posi) < 100) {
+                dvChannel1DiscardUnder100.setUint16(ch1Posi, 0);
+            }
+            else if (dvRawChannel1.getUint16(ch1Posi) >= 100) {
+                dvChannel1DiscardUnder100.setUint16(ch1Posi, dvRawChannel1.getUint16(ch1Posi));
+            }
+        }
+        for (var ch2Posi = 0; ch2Posi < dvRawChannel2.byteLength; ch2Posi = ch2Posi + 2) {
+            if (dvRawChannel2.getUint16(ch2Posi) < 100) {
+                dvChannel2DiscardUnder100.setUint16(ch2Posi, 0);
+            }
+            else if (dvRawChannel2.getUint16(ch2Posi) >= 100) {
+                dvChannel2DiscardUnder100.setUint16(ch2Posi, dvRawChannel1.getUint16(ch2Posi));
+            }
+        }
+        for (var ch3Posi = 0; ch3Posi < dvRawChannel3.byteLength; ch3Posi = ch3Posi + 2) {
+            if (dvRawChannel3.getUint16(ch3Posi) < 100) {
+                dvChannel3DiscardUnder100.setUint16(ch3Posi, 0);
+            }
+            else if (dvRawChannel3.getUint16(ch3Posi) >= 100) {
+                dvChannel3DiscardUnder100.setUint16(ch3Posi, dvRawChannel1.getUint16(ch3Posi));
+            }
+        }
+        for (var ch4Posi = 0; ch4Posi < dvRawChannel1.byteLength; ch4Posi = ch4Posi + 2) {
+            if (dvRawChannel4.getUint16(ch4Posi) < 100) {
+                dvChannel4DiscardUnder100.setUint16(ch4Posi, 0);
+            }
+            else if (dvRawChannel4.getUint16(ch4Posi) >= 100) {
+                dvChannel4DiscardUnder100.setUint16(ch4Posi, dvRawChannel1.getUint16(ch4Posi));
+            }
+        }
+        for (var ch1Posi = 0; ch1Posi < dvChannel1DiscardUnder100.byteLength; ch1Posi = ch1Posi + 2) {
+            dvChannel1DiscardUnder100.setUint16(ch1Posi, dvChannel1DiscardUnder100.getUint16(ch1Posi, true));
+        }
+        this.culcBladderRange(dvChannel1DiscardUnder100, dvChannel2DiscardUnder100, dvChannel3DiscardUnder100, dvChannel4DiscardUnder100);
+    };
+    AppComponent.prototype.culcBladderRange = function (dvChannel1, dvChannel2, dvChannel3, dvChannel4) {
+        this.ch1AntePosition = 0;
+        this.ch1PostePosition = 0;
+        this.ch2AntePosition = 0;
+        this.ch2PostePosition = 0;
+        this.ch3AntePosition = 0;
+        this.ch3PostePosition = 0;
+        this.ch4AntePosition = 0;
+        this.ch4PostePosition = 0;
+        for (var ch1Posi = 0; ch1Posi < dvChannel1.byteLength; ch1Posi = ch1Posi + 2) {
+            if (dvChannel1.getUint16(ch1Posi) === 0) { // 入っているところが0のときにここに処理が遷移
+                if (this.ch1AntePosition === 0) {
+                    this.ch1AntePosition = ch1Posi;
+                }
+                else if (this.ch1AntePosition !== 0) { // 後壁の計算
+                    if (ch1Posi < 254) {
+                        this.ch1PostePosition = ch1Posi;
+                        if (dvChannel1.getUint16(ch1Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        for (var ch2Posi = 0; ch2Posi < dvChannel2.byteLength; ch2Posi = ch2Posi + 2) {
+            if (dvChannel2.getUint16(ch2Posi) === 0) { // 入っているところが0のときにここに処理が遷移
+                if (this.ch2AntePosition === 0) {
+                    this.ch2AntePosition = ch2Posi;
+                }
+                else if (this.ch2AntePosition !== 0) { // 後壁の計算
+                    if (ch2Posi < 254) {
+                        this.ch2PostePosition = ch2Posi;
+                        if (dvChannel2.getUint16(ch2Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        for (var ch3Posi = 0; ch3Posi < dvChannel1.byteLength; ch3Posi = ch3Posi + 2) {
+            if (dvChannel3.getUint16(ch3Posi) === 0) { // 入っているところが0のときにここに処理が遷移
+                if (this.ch3AntePosition === 0) {
+                    this.ch3AntePosition = ch3Posi;
+                }
+                else if (this.ch3AntePosition !== 0) { // 後壁の計算
+                    if (ch3Posi < 254) {
+                        this.ch3PostePosition = ch3Posi;
+                        if (dvChannel3.getUint16(ch3Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        for (var ch4Posi = 0; ch4Posi < dvChannel4.byteLength; ch4Posi = ch4Posi + 2) {
+            if (dvChannel4.getUint16(ch4Posi) === 0) { // 入っているところが0のときにここに処理が遷移
+                if (this.ch4AntePosition === 0) {
+                    this.ch4AntePosition = ch4Posi;
+                }
+                else if (this.ch4AntePosition !== 0) { // 後壁の計算
+                    if (ch4Posi < 254) {
+                        this.ch4PostePosition = ch4Posi;
+                        if (dvChannel4.getUint16(ch4Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        this.ch1BladderSize = (this.ch1PostePosition) - (this.ch1AntePosition);
+        this.ch2BladderSize = (this.ch2PostePosition) - (this.ch2AntePosition);
+        this.ch3BladderSize = (this.ch3PostePosition) - (this.ch3AntePosition);
+        this.ch4BladderSize = (this.ch4PostePosition) - (this.ch4AntePosition);
+        // alert(this.ch1BladderSize + ' ' + this.ch2BladderSize + ' ' + this.ch3BladderSize + ' ' + this.ch4BladderSize);
+        this.anteriorPositionUnder30(this.ch1AntePosition, this.ch2AntePosition, this.ch3AntePosition, this.ch4AntePosition);
+    };
+    AppComponent.prototype.sendMessageToChatRoom = function () {
+        alert(this.ch1IsUrine + ' ' + this.ch2IsUrine + ' ' + this.ch3IsUrine + ' ' + this.ch4IsUrine);
+    };
+    AppComponent.prototype.anteriorPositionUnder30 = function (ch1AntePosition, ch2AntePosition, ch3AntePosition, ch4AntePosition) {
+        if ((ch1AntePosition <= 30) || (ch2AntePosition <= 30) || (ch3AntePosition <= 30) || (ch4AntePosition <= 30)) {
+            if ((this.ch1BladderSize > 9) || (this.ch2BladderSize > 9) || (this.ch3BladderSize > 9) || (this.ch4BladderSize > 9)) {
+                this.culcDiscardUnder20();
+            }
+        }
+        this.sendMessageToChatRoom();
+    };
+    AppComponent.prototype.culcDiscardUnder20 = function () {
+        var bufferChannel1DiscardUnder20 = new ArrayBuffer(256);
+        var dvChannel1DiscardUnder20 = new DataView(bufferChannel1DiscardUnder20);
+        var bufferChannel2DiscardUnder20 = new ArrayBuffer(256);
+        var dvChannel2DiscardUnder20 = new DataView(bufferChannel2DiscardUnder20);
+        var bufferChannel3DiscardUnder20 = new ArrayBuffer(256);
+        var dvChannel3DiscardUnder20 = new DataView(bufferChannel3DiscardUnder20);
+        var bufferChannel4DiscardUnder20 = new ArrayBuffer(256);
+        var dvChannel4DiscardUnder20 = new DataView(bufferChannel4DiscardUnder20);
+        for (var ch1Posi = 0; ch1Posi < this.dvRawChannel1.byteLength; ch1Posi = ch1Posi + 2) {
+            if (this.dvRawChannel1.getUint16(ch1Posi) < 20) {
+                dvChannel1DiscardUnder20.setUint16(ch1Posi, 0);
+            }
+            else if (this.dvRawChannel1.getUint16(ch1Posi) >= 20) {
+                dvChannel1DiscardUnder20.setUint16(ch1Posi, this.dvRawChannel1.getUint16(ch1Posi));
+            }
+        }
+        for (var ch2Posi = 0; ch2Posi < this.dvRawChannel2.byteLength; ch2Posi = ch2Posi + 2) {
+            if (this.dvRawChannel2.getUint16(ch2Posi) < 20) {
+                dvChannel2DiscardUnder20.setUint16(ch2Posi, 0);
+            }
+            else if (this.dvRawChannel2.getUint16(ch2Posi) >= 20) {
+                dvChannel2DiscardUnder20.setUint16(ch2Posi, this.dvRawChannel2.getUint16(ch2Posi));
+            }
+        }
+        for (var ch3Posi = 0; ch3Posi < this.dvRawChannel3.byteLength; ch3Posi = ch3Posi + 2) {
+            if (this.dvRawChannel3.getUint16(ch3Posi) < 20) {
+                dvChannel3DiscardUnder20.setUint16(ch3Posi, 0);
+            }
+            else if (this.dvRawChannel3.getUint16(ch3Posi) >= 20) {
+                dvChannel3DiscardUnder20.setUint16(ch3Posi, this.dvRawChannel1.getUint16(ch3Posi));
+            }
+        }
+        for (var ch4Posi = 0; ch4Posi < this.dvRawChannel4.byteLength; ch4Posi = ch4Posi + 2) {
+            if (this.dvRawChannel4.getUint16(ch4Posi) < 20) {
+                dvChannel4DiscardUnder20.setUint16(ch4Posi, 0);
+            }
+            else if (this.dvRawChannel4.getUint16(ch4Posi) >= 20) {
+                dvChannel4DiscardUnder20.setUint16(ch4Posi, this.dvRawChannel4.getUint16(ch4Posi));
+            }
+        }
+        this.culcDiscardPosition(dvChannel1DiscardUnder20, dvChannel2DiscardUnder20, dvChannel3DiscardUnder20, dvChannel4DiscardUnder20);
+        this.judgeRangePosition();
+    };
+    AppComponent.prototype.culcDiscardPosition = function (dvChannel1, dvChannel2, dvChannel3, dvChannel4) {
+        this.ch1Under20FrontPosition = 0;
+        this.ch1Under20BackPosition = 0;
+        this.ch2Under20FrontPosition = 0;
+        this.ch2Under20BackPosition = 0;
+        this.ch3Under20FrontPosition = 0;
+        this.ch3Under20BackPosition = 0;
+        this.ch4Under20FrontPosition = 0;
+        this.ch4Under20BackPosition = 0;
+        for (var ch1Posi = 0; ch1Posi < dvChannel1.byteLength; ch1Posi = ch1Posi + 2) {
+            if (dvChannel1.getUint16(ch1Posi) === 0) {
+                if (this.ch1Under20FrontPosition === 0) {
+                    this.ch1Under20FrontPosition = ch1Posi;
+                }
+                else if (this.ch1Under20FrontPosition !== 0) {
+                    if (ch1Posi < 254) {
+                        this.ch1Under20BackPosition = ch1Posi;
+                        if (dvChannel1.getUint16(ch1Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        for (var ch2Posi = 0; ch2Posi < dvChannel2.byteLength; ch2Posi = ch2Posi + 2) {
+            if (dvChannel2.getUint16(ch2Posi) === 0) {
+                if (this.ch2Under20FrontPosition === 0) {
+                    this.ch2Under20FrontPosition = ch2Posi;
+                }
+                else if (this.ch2Under20FrontPosition !== 0) {
+                    if (ch2Posi < 254) {
+                        this.ch2Under20BackPosition = ch2Posi;
+                        if (dvChannel2.getUint16(ch2Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        for (var ch3Posi = 0; ch3Posi < dvChannel1.byteLength; ch3Posi = ch3Posi + 2) {
+            if (dvChannel3.getUint16(ch3Posi) === 0) {
+                if (this.ch3Under20FrontPosition === 0) {
+                    this.ch3Under20FrontPosition = ch3Posi;
+                }
+                else if (this.ch3Under20FrontPosition !== 0) {
+                    if (ch3Posi < 254) {
+                        this.ch3Under20BackPosition = ch3Posi;
+                        if (dvChannel3.getUint16(ch3Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        for (var ch4Posi = 0; ch4Posi < dvChannel4.byteLength; ch4Posi = ch4Posi + 2) {
+            if (dvChannel4.getUint16(ch4Posi) === 0) {
+                if (this.ch4Under20FrontPosition === 0) {
+                    this.ch4Under20FrontPosition = ch4Posi;
+                }
+                else if (this.ch4Under20FrontPosition !== 0) {
+                    if (ch4Posi < 254) {
+                        this.ch4Under20BackPosition = ch4Posi;
+                        if (dvChannel4.getUint16(ch4Posi + 2) !== 0) {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        // this.judgeRangePosition();
+    };
+    AppComponent.prototype.judgeRangePosition = function () {
+        if (this.ch1AntePosition <= this.ch1Under20FrontPosition) {
+            if (this.ch1Under20BackPosition <= this.ch1PostePosition) {
+                this.ch1IsUrine = true;
+            }
+            else {
+                this.ch1IsUrine = false;
+            }
+        }
+        else {
+            this.ch1IsUrine = false;
+        }
+        if (this.ch2AntePosition <= this.ch2Under20FrontPosition) {
+            if (this.ch2Under20BackPosition <= this.ch2PostePosition) {
+                this.ch2IsUrine = true;
+            }
+            else {
+                this.ch2IsUrine = false;
+            }
+        }
+        else {
+            this.ch2IsUrine = false;
+        }
+        if (this.ch3AntePosition <= this.ch3Under20FrontPosition) {
+            if (this.ch3Under20BackPosition <= this.ch3PostePosition) {
+                this.ch3IsUrine = true;
+            }
+            else {
+                this.ch3IsUrine = false;
+            }
+        }
+        else {
+            this.ch3IsUrine = false;
+        }
+        if (this.ch4AntePosition <= this.ch4Under20FrontPosition) {
+            if (this.ch4Under20BackPosition <= this.ch4PostePosition) {
+                this.ch4IsUrine = true;
+            }
+            else {
+                this.ch4IsUrine = false;
+            }
+        }
+        else {
+            this.ch4IsUrine = false;
+        }
     };
     AppComponent.prototype.liffGetPSDIService = function (service) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                service.getCharacteristic(PSDI_CHARACTERISTIC_UUID).then(function (characteristic) {
+                service
+                    .getCharacteristic(PSDI_CHARACTERISTIC_UUID)
+                    .then(function (characteristic) {
                     return characteristic.readValue();
                 })
                     .then(function (value) {
                     var psdi = new Uint8Array(value.buffer);
-                }).catch(function (error) { return alert('liffGetPSDIService ERROR: ' + error); });
+                })
+                    .catch(function (error) { return alert('liffGetPSDIService ERROR: ' + error); });
                 return [2 /*return*/];
             });
         });
     };
     AppComponent.prototype.test = function () {
-        // this.liffGetUltraBeforeDataService(this.service);
         this.liffGetUltraDataService(this.service);
-    };
-    // それぞの引数には128個の16進数のデータが入っている
-    AppComponent.prototype.decryptionChannelData = function (dvChannel0, dvChannel1, dvChannel2, dvChannel3) {
-        var channel0Data;
-        var channel1Data;
-        var channel2Data;
-        var channel3Data;
-        for (var n = 0; n < 256; n = n + 2) {
-            if ((n / 2) % 10 === 0) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 1) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 2) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 3) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 4) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 5) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 6) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 7) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 8) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-            if ((n / 2) % 10 === 9) {
-                channel0Data = dvChannel0.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel1Data = dvChannel1.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel2Data = dvChannel2.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                channel3Data = dvChannel3.getUint16(n) ^ _data_liffData__WEBPACK_IMPORTED_MODULE_2__["keyHexadecimalNum"].key1;
-                this.dvChannel0.setUint16(n, channel0Data);
-                this.dvChannel1.setUint16(n, channel1Data);
-                this.dvChannel2.setUint16(n, channel2Data);
-                this.dvChannel3.setUint16(n, channel3Data);
-            }
-        }
-        alert(new Uint16Array(this.dvChannel1.buffer));
     };
     AppComponent.prototype.liffGetButtonStateCharacteristic = function (characteristic) {
         return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
             return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
-                characteristic.startNotifications().then(function () {
-                    characteristic.addEventListener('characteristicvaluechanged', function (e) {
-                        var val = new Uint16Array(e.target.value.buffer)[0];
-                        alert("Button Val: " + val);
-                        var target = new Uint16Array(e.target.value.buffer);
-                        alert(target);
+                characteristic
+                    .startNotifications()
+                    .then(function () {
+                    characteristic.addEventListener('characteristicvaluechanged', function (res) {
+                        var results = new Uint16Array(res.target.val.buffer);
+                        // const val = new Uint16Array(e.target.value.buffer)[0];
+                        alert(results);
                     });
                 })
                     .catch(function (error) {
@@ -475,8 +710,8 @@ var LiffData = {
     USER_SERVICE_UUID: 'c4dd444d-6d46-47de-8b24-c3b70fbf8b31',
     LED_CHARACTERISTIC_UUID: 'E9062E71-9E62-4BC6-B0D3-35CDCD9B027B',
     BTN_CHARACTERISTIC_UUID: '62FBD229-6EDD-4D1A-B554-5C4E1BB29169',
-    ULTRA_BEFORE_CHARACTERISTIC_UUID: 'C7D372AE-F856-46e0-A21B-AB41F3434656',
-    ULTRA_AFTER_CHARACTERISTIC_UUID: 'F681F9EC-2C70-45d2-BE3A-FC54D033B50A',
+    ULTRA_DATA0_CHARACTERISTIC_UUID: 'C7D372AE-F856-46e0-A21B-AB41F3434656',
+    ULTRA_DATA1_CHARACTERISTIC_UUID: 'F681F9EC-2C70-45d2-BE3A-FC54D033B50A',
     PSDI_SERVICE_UUID: 'E625601E-9E55-4597-A598-76018A0D293D',
     PSDI_CHARACTERISTIC_UUID: '26E2B12B-85F0-4F3F-9FDD-91D114270E6E'
 };
