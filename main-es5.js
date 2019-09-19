@@ -623,6 +623,7 @@ var AppComponent = /** @class */ (function () {
                     });
                 })
                     .catch(function (error) {
+                    alert('Button Error: ' + error);
                     // uiStatusError(makeErrorMsg(error), false);
                 });
                 return [2 /*return*/];

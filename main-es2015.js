@@ -585,6 +585,7 @@ let AppComponent = class AppComponent {
                 });
             })
                 .catch(error => {
+                alert('Button Error: ' + error);
                 // uiStatusError(makeErrorMsg(error), false);
             });
         });
