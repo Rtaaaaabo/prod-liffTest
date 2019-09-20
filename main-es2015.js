@@ -88,9 +88,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
 /* harmony import */ var _data_liffData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data/liffData */ "./src/app/data/liffData.ts");
+/* harmony import */ var _services_line_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/line.service */ "./src/app/services/line.service.ts");
 
 
-// import { LiffService } from './services/liff.service';
+
 
 const SERVICE_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].USER_SERVICE_UUID;
 const BTN_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].BTN_CHARACTERISTIC_UUID;
@@ -99,7 +100,8 @@ const ULTRA_DATA1_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_
 const PSDI_SERVICE_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].PSDI_SERVICE_UUID;
 const PSDI_CHARACTERISTIC_UUID = _data_liffData__WEBPACK_IMPORTED_MODULE_2__["LiffData"].PSDI_CHARACTERISTIC_UUID;
 let AppComponent = class AppComponent {
-    constructor() {
+    constructor(lineService) {
+        this.lineService = lineService;
         this.title = 'LIFF Mock';
         this.bufferData0 = new ArrayBuffer(512);
         this.bufferData1 = new ArrayBuffer(512);
@@ -137,95 +139,85 @@ let AppComponent = class AppComponent {
         liff.init(() => this.initLineLiff(), error => alert('31' + JSON.stringify(error)));
     }
     initLineLiff() {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            liff.initPlugins(['bluetooth']).then(() => {
-                this.liffCheckAvailablityAndDo(() => this.liffRequestDevice());
-            });
+        liff.initPlugins(['bluetooth'])
+            .then(() => {
+            this.liffCheckAvailablityAndDo(() => this.liffRequestDevice());
         });
     }
     liffCheckAvailablityAndDo(callbackIfAvailable) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            liff.bluetooth.getAvailability().then(isAvailable => {
-                if (isAvailable) {
-                    callbackIfAvailable();
-                }
-                else {
-                    setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
-                }
-            });
+        liff.bluetooth.getAvailability()
+            .then(isAvailable => {
+            if (isAvailable) {
+                callbackIfAvailable();
+            }
+            else {
+                setTimeout(() => this.liffCheckAvailablityAndDo(callbackIfAvailable), 10000);
+            }
         });
     }
     liffRequestDevice() {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            liff.bluetooth.requestDevice().then(device => {
-                this.liffConnectToDevice(device);
-            });
+        liff.bluetooth.requestDevice().then(device => {
+            this.liffConnectToDevice(device);
         });
     }
     liffConnectToDevice(device) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            device.gatt.connect().then(() => {
-                device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
-                    this.service = service;
-                    this.liffGetUserService(service);
-                });
-                device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
-                    this.liffGetPSDIService(service);
-                });
+        device.gatt.connect().then(() => {
+            device.gatt.getPrimaryService(SERVICE_UUID).then(service => {
+                this.service = service;
+                this.liffGetUserService(service);
             });
-            const disconnectCallback = () => {
-                device.removeEventListener('gattserverdisconnected', disconnectCallback);
-                this.initLineLiff();
-            };
-            device.addEventListener('gattserverdisconnected', disconnectCallback);
+            device.gatt.getPrimaryService(PSDI_SERVICE_UUID).then(service => {
+                this.liffGetPSDIService(service);
+            });
         });
+        const disconnectCallback = () => {
+            device.removeEventListener('gattserverdisconnected', disconnectCallback);
+            this.initLineLiff();
+        };
+        device.addEventListener('gattserverdisconnected', disconnectCallback);
     }
     liffGetUserService(service) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
-                this.liffGetButtonStateCharacteristic(characteristic);
-            });
+        service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
+            this.liffGetButtonStateCharacteristic(characteristic);
         });
     }
     liffGetUltraDataService(service) {
-        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
-            this.ch1IsUrine = false;
-            this.ch2IsUrine = false;
-            this.ch3IsUrine = false;
-            this.ch4IsUrine = false;
-            yield service
-                .getCharacteristic(ULTRA_DATA0_CHARACTERISTIC_UUID)
-                .then(characteristicData0 => {
-                return characteristicData0.readValue();
+        this.ch1IsUrine = false;
+        this.ch2IsUrine = false;
+        this.ch3IsUrine = false;
+        this.ch4IsUrine = false;
+        service
+            .getCharacteristic(ULTRA_DATA0_CHARACTERISTIC_UUID)
+            .then(characteristicData0 => {
+            return characteristicData0.readValue();
+        })
+            .then(dataView0Value => {
+            service
+                .getCharacteristic(ULTRA_DATA1_CHARACTERISTIC_UUID)
+                .then(characteristicData1 => {
+                return characteristicData1.readValue();
             })
-                .then(dataView0Value => {
-                service
-                    .getCharacteristic(ULTRA_DATA1_CHARACTERISTIC_UUID)
-                    .then(characteristicData1 => {
-                    return characteristicData1.readValue();
-                })
-                    .then(characteristicData1 => {
-                    for (let i = 0; i < dataView0Value.byteLength; i = i + 2) {
-                        this.dvData0.setUint16(i, dataView0Value.getUint16(i));
-                    }
-                    for (let i = 0; i < characteristicData1.byteLength; i = i + 2) {
-                        this.dvData1.setUint16(i, characteristicData1.getUint16(i));
-                    }
-                    this.splitForChannel(this.dvData0, this.dvData1);
-                    this.ultraData0 = new Uint16Array(this.dvData0.buffer);
-                    this.ultraData1 = new Uint16Array(this.dvData1.buffer);
-                })
-                    .catch(error => alert('Data0 ERROR: ' + error));
+                .then(characteristicData1 => {
+                for (let i = 0; i < dataView0Value.byteLength; i = i + 2) {
+                    this.dvData0.setUint16(i, dataView0Value.getUint16(i));
+                }
+                for (let i = 0; i < characteristicData1.byteLength; i = i + 2) {
+                    this.dvData1.setUint16(i, characteristicData1.getUint16(i));
+                }
+                this.splitForChannel(this.dvData0, this.dvData1);
+                this.ultraData0 = new Uint16Array(this.dvData0.buffer);
+                this.ultraData1 = new Uint16Array(this.dvData1.buffer);
             })
-                .catch(error => alert('Data1 ERROR: ' + error));
-        });
+                .catch(error => alert('Data0 ERROR: ' + error));
+        })
+            .catch(error => alert('Data1 ERROR: ' + error));
     }
     splitForChannel(dvData0, dvData1) {
         for (let i = 0; i < dvData0.byteLength; i = i + 2) {
             if (i < 256) {
                 this.dvRawChannel1.setUint16(i, dvData0.getUint16(i, true));
             }
-            else if (i < 512) {
+            else if (i < 508) {
                 this.dvRawChannel2.setUint16(i - 256, dvData0.getUint16(i, true));
             }
         }
@@ -233,7 +225,7 @@ let AppComponent = class AppComponent {
             if (i < 256) {
                 this.dvRawChannel3.setUint16(i, dvData1.getUint16(i, true));
             }
-            else if (i < 512) {
+            else if (i < 508) {
                 this.dvRawChannel4.setUint16(i - 256, dvData1.getUint16(i, true));
             }
         }
@@ -374,6 +366,28 @@ let AppComponent = class AppComponent {
         this.anteriorPositionUnder30(this.ch1AntePosition, this.ch2AntePosition, this.ch3AntePosition, this.ch4AntePosition);
     }
     sendMessageToChatRoom() {
+        const packageId = '11537';
+        let countIs = 0;
+        if (this.ch1IsUrine) {
+            countIs++;
+        }
+        if (this.ch2IsUrine) {
+            countIs++;
+        }
+        if (this.ch3IsUrine) {
+            countIs++;
+        }
+        if (this.ch4IsUrine) {
+            countIs++;
+        }
+        const strCountIs = String(countIs);
+        const kindMessageArray = [
+            {
+                type: 'text',
+                text: `${strCountIs}つのデータから取得できております。`
+            }
+        ];
+        liff.sendMessages(kindMessageArray).then((res) => alert('Success!')).catch((err) => alert(err));
         alert(this.ch1IsUrine + ' ' + this.ch2IsUrine + ' ' + this.ch3IsUrine + ' ' + this.ch4IsUrine);
     }
     anteriorPositionUnder30(ch1AntePosition, ch2AntePosition, ch3AntePosition, ch4AntePosition) {
@@ -514,7 +528,12 @@ let AppComponent = class AppComponent {
     judgeRangePosition() {
         if (this.ch1AntePosition <= this.ch1Under20FrontPosition) {
             if (this.ch1Under20BackPosition <= this.ch1PostePosition) {
-                this.ch1IsUrine = true;
+                if ((this.ch1Under20BackPosition - this.ch1Under20FrontPosition) > 3) {
+                    this.ch1IsUrine = true;
+                }
+                else {
+                    this.ch1IsUrine = false;
+                }
             }
             else {
                 this.ch1IsUrine = false;
@@ -525,7 +544,12 @@ let AppComponent = class AppComponent {
         }
         if (this.ch2AntePosition <= this.ch2Under20FrontPosition) {
             if (this.ch2Under20BackPosition <= this.ch2PostePosition) {
-                this.ch2IsUrine = true;
+                if ((this.ch1Under20BackPosition - this.ch1Under20FrontPosition) > 3) {
+                    this.ch2IsUrine = true;
+                }
+                else {
+                    this.ch2IsUrine = false;
+                }
             }
             else {
                 this.ch2IsUrine = false;
@@ -536,7 +560,12 @@ let AppComponent = class AppComponent {
         }
         if (this.ch3AntePosition <= this.ch3Under20FrontPosition) {
             if (this.ch3Under20BackPosition <= this.ch3PostePosition) {
-                this.ch3IsUrine = true;
+                if ((this.ch1Under20BackPosition - this.ch1Under20FrontPosition) > 3) {
+                    this.ch3IsUrine = true;
+                }
+                else {
+                    this.ch3IsUrine = false;
+                }
             }
             else {
                 this.ch3IsUrine = false;
@@ -547,7 +576,12 @@ let AppComponent = class AppComponent {
         }
         if (this.ch4AntePosition <= this.ch4Under20FrontPosition) {
             if (this.ch4Under20BackPosition <= this.ch4PostePosition) {
-                this.ch4IsUrine = true;
+                if ((this.ch1Under20BackPosition - this.ch1Under20FrontPosition) > 3) {
+                    this.ch4IsUrine = true;
+                }
+                else {
+                    this.ch4IsUrine = false;
+                }
             }
             else {
                 this.ch4IsUrine = false;
@@ -579,7 +613,6 @@ let AppComponent = class AppComponent {
                 .startNotifications()
                 .then(() => {
                 characteristic.addEventListener('characteristicvaluechanged', res => {
-                    // const results = new Uint16Array(res.target.val.buffer);
                     const val = new Uint16Array(res.target.value.buffer)[0];
                     alert(val);
                 });
@@ -591,6 +624,9 @@ let AppComponent = class AppComponent {
         });
     }
 };
+AppComponent.ctorParameters = () => [
+    { type: _services_line_service__WEBPACK_IMPORTED_MODULE_3__["LineService"] }
+];
 AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
         selector: 'app-root',
@@ -621,6 +657,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/fesm2015/animations.js");
 /* harmony import */ var _material_module_material_module_module__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./material-module/material-module.module */ "./src/app/material-module/material-module.module.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm2015/http.js");
+
 
 
 
@@ -641,7 +679,8 @@ AppModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
             _app_routing_module__WEBPACK_IMPORTED_MODULE_3__["AppRoutingModule"],
             _angular_forms__WEBPACK_IMPORTED_MODULE_4__["FormsModule"],
             _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_6__["BrowserAnimationsModule"],
-            _material_module_material_module_module__WEBPACK_IMPORTED_MODULE_7__["MaterialModuleModule"]
+            _material_module_material_module_module__WEBPACK_IMPORTED_MODULE_7__["MaterialModuleModule"],
+            _angular_common_http__WEBPACK_IMPORTED_MODULE_8__["HttpClientModule"]
         ],
         providers: [],
         bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"]]
@@ -732,6 +771,64 @@ MaterialModuleModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         ]
     })
 ], MaterialModuleModule);
+
+
+
+/***/ }),
+
+/***/ "./src/app/services/line.service.ts":
+/*!******************************************!*\
+  !*** ./src/app/services/line.service.ts ***!
+  \******************************************/
+/*! exports provided: LineService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LineService", function() { return LineService; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm2015/http.js");
+
+
+
+const URL_PUSHMESSAGE = 'https://api.line.me/v2/bot/message/push';
+const USERID = 'U84dee41fcf53a85a6c0a963e68426fa6';
+let LineService = class LineService {
+    constructor(http) {
+        this.http = http;
+        this.postData = {
+            to: USERID,
+            messages: [
+                {
+                    type: 'text',
+                    text: 'こんにちは'
+                }
+            ],
+            notificationDisabled: false
+        };
+    }
+    // httpsOptions: any = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type' : 'application/json',
+    //     'Authorization': 'Bearer uSBy65ol/BcWMnq5bD985zj1luz7umkFQmP9NRgq1ZUUjmbzjpZOlGh12gNmPBSXKR40+CnbUS3cgEquKzoXrtOw9AkMLn2aU0QAllk4ujTG9vCqQ6iviceH4Rd3vUUNkPy7kBSvf22jdCWsKiEMQVGUYhWQfeY8sLGRXgo3xvw='
+    //   }),
+    // };
+    pushMessages() {
+        let httpsHeaders = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]();
+        httpsHeaders = httpsHeaders.append('Content-Type', 'application/json');
+        httpsHeaders = httpsHeaders.append('Authorization', 'Bearer uSBy65ol/BcWMnq5bD985zj1luz7umkFQmP9NRgq1ZUUjmbzjpZOlGh12gNmPBSXKR40+CnbUS3cgEquKzoXrtOw9AkMLn2aU0QAllk4ujTG9vCqQ6iviceH4Rd3vUUNkPy7kBSvf22jdCWsKiEMQVGUYhWQfeY8sLGRXgo3xvw=');
+        return this.http.post(URL_PUSHMESSAGE, this.postData, { headers: httpsHeaders });
+    }
+};
+LineService.ctorParameters = () => [
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] }
+];
+LineService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+        providedIn: 'root'
+    })
+], LineService);
 
 
 
