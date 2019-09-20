@@ -180,6 +180,12 @@ let AppComponent = class AppComponent {
         service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(characteristic => {
             this.liffGetButtonStateCharacteristic(characteristic);
         });
+        service.getCharacteristic(ULTRA_DATA0_CHARACTERISTIC_UUID).then(characteristic => {
+            this.liffGetData0StateCharacteristic(characteristic);
+        });
+        service.getCharacteristic(ULTRA_DATA0_CHARACTERISTIC_UUID).then(characteristic => {
+            this.liffGetData1StateCharacteristic(characteristic);
+        });
     }
     liffGetUltraDataService(service) {
         this.ch1IsUrine = false;
@@ -614,12 +620,38 @@ let AppComponent = class AppComponent {
                 .then(() => {
                 characteristic.addEventListener('characteristicvaluechanged', res => {
                     const val = new Uint16Array(res.target.value.buffer)[0];
-                    alert(val);
                 });
             })
                 .catch(error => {
                 alert('Button Error: ' + error);
-                // uiStatusError(makeErrorMsg(error), false);
+            });
+        });
+    }
+    liffGetData0StateCharacteristic(characteristic) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            characteristic
+                .startNotifications()
+                .then(() => {
+                characteristic.addEventListener('characteristicvaluechanged', res => {
+                    alert(new Uint16Array(res.target.value.buffer)[0]);
+                });
+            })
+                .catch(error => {
+                alert('DATA0 Error: ' + error);
+            });
+        });
+    }
+    liffGetData1StateCharacteristic(characteristic) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function* () {
+            characteristic
+                .startNotifications()
+                .then(() => {
+                characteristic.addEventListener('characteristicvaluechanged', res => {
+                    alert(new Uint16Array(res.target.value.buffer)[0]);
+                });
+            })
+                .catch(error => {
+                alert('DATA1 Error: ' + error);
             });
         });
     }

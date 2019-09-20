@@ -189,6 +189,12 @@ var AppComponent = /** @class */ (function () {
         service.getCharacteristic(BTN_CHARACTERISTIC_UUID).then(function (characteristic) {
             _this.liffGetButtonStateCharacteristic(characteristic);
         });
+        service.getCharacteristic(ULTRA_DATA0_CHARACTERISTIC_UUID).then(function (characteristic) {
+            _this.liffGetData0StateCharacteristic(characteristic);
+        });
+        service.getCharacteristic(ULTRA_DATA0_CHARACTERISTIC_UUID).then(function (characteristic) {
+            _this.liffGetData1StateCharacteristic(characteristic);
+        });
     };
     AppComponent.prototype.liffGetUltraDataService = function (service) {
         var _this = this;
@@ -628,12 +634,44 @@ var AppComponent = /** @class */ (function () {
                     .then(function () {
                     characteristic.addEventListener('characteristicvaluechanged', function (res) {
                         var val = new Uint16Array(res.target.value.buffer)[0];
-                        alert(val);
                     });
                 })
                     .catch(function (error) {
                     alert('Button Error: ' + error);
-                    // uiStatusError(makeErrorMsg(error), false);
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
+    AppComponent.prototype.liffGetData0StateCharacteristic = function (characteristic) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                characteristic
+                    .startNotifications()
+                    .then(function () {
+                    characteristic.addEventListener('characteristicvaluechanged', function (res) {
+                        alert(new Uint16Array(res.target.value.buffer)[0]);
+                    });
+                })
+                    .catch(function (error) {
+                    alert('DATA0 Error: ' + error);
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
+    AppComponent.prototype.liffGetData1StateCharacteristic = function (characteristic) {
+        return tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"](this, void 0, void 0, function () {
+            return tslib__WEBPACK_IMPORTED_MODULE_0__["__generator"](this, function (_a) {
+                characteristic
+                    .startNotifications()
+                    .then(function () {
+                    characteristic.addEventListener('characteristicvaluechanged', function (res) {
+                        alert(new Uint16Array(res.target.value.buffer)[0]);
+                    });
+                })
+                    .catch(function (error) {
+                    alert('DATA1 Error: ' + error);
                 });
                 return [2 /*return*/];
             });
